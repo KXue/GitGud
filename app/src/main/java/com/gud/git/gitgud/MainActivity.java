@@ -17,8 +17,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(savedInstanceState == null){
-            getFragmentManager().beginTransaction().add(R.id.container, new MainMenuFragment(), TAG_FRAGMENT).commit();
+            getFragmentManager().beginTransaction().add(R.id.container, new GameFragment(), TAG_FRAGMENT).commit();
         }
+        //startGame();
     }
     public void startGame(){
         navigateToFragment(new GameFragment());

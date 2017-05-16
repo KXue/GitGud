@@ -72,17 +72,6 @@ public class GameEngine {
         }
     }
 
-    private Runnable mDrawRunnable = new Runnable() {
-        @Override
-        public void run() {
-            synchronized (mGameObjects){
-                int numGameObjects = mGameObjects.size();
-                for(int i = 0; i < numGameObjects; i++){
-                    mGameObjects.get(i).onDraw();;
-                }
-            }
-        }
-    };
 
     public void onDraw() {
         if(mDrawSurfaceHolder.getSurface().isValid()){

@@ -3,10 +3,12 @@ package com.gud.git.gitgud.Engine;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.R;
 
 import java.util.ArrayList;
@@ -27,7 +29,10 @@ public class GameEngine {
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
+    private int screenWidth, screenHeight;
+
     public GameEngine(){
+
         mPaint = new Paint();
     }
     public void startGame(){
@@ -57,6 +62,13 @@ public class GameEngine {
         mDrawSurfaceHolder = surfaceHolder;
     }
 
+    public void addGameObject(GameObject obj){
+        mObjectsToAdd.add(obj);
+    }
+    public void removeGameObject(GameObject obj){
+        mObjectsToRemove.add(obj);
+    }
+
     public void onUpdate(long elapsedMillis) {
         int numGameObjects = mGameObjects.size();
         for (int i=0; i<numGameObjects; i++) {
@@ -78,6 +90,11 @@ public class GameEngine {
             mCanvas = mDrawSurfaceHolder.lockCanvas();
             mPaint.setColor(Color.argb(255, 0, 0,0));
             mCanvas.drawColor(Color.argb(255, 0, 0,0));
+            int numGameObjects = mGameObjects.size();
+//            Log.d("Engine", numGameObjects + "");
+            for(int i = 0; i < numGameObjects; i++){
+                mGameObjects.get(i).onDraw(mPaint, mCanvas);
+            }
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }

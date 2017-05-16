@@ -23,4 +23,11 @@ public class App extends Application {
         super.onCreate();
         sApplication = this;
     }
+    public static int getScreenWidth() {
+        return getContext().getResources().getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight() {
+        return getContext().getResources().getDisplayMetrics().heightPixels;
+    }
 }

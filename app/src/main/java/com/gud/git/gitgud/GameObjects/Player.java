@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
+import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
@@ -21,12 +23,10 @@ import com.gud.git.gitgud.R;
 
 public class Player extends GameObject implements Renderable,Updateable{
 
-   //private final View mView;
-
     private int mMaxX,mMaxY;
     private double mPixelFactor;
 
-    double mPositionX,mPositionY;
+    float mPositionX,mPositionY;
     double mSpeedFactor;
 
 
@@ -37,19 +37,18 @@ public class Player extends GameObject implements Renderable,Updateable{
     //elipse 2d
 
     //todo:animated?
-    Bitmap mPlayerBitmap;
+    public Bitmap mPlayerBitmap;
 
     //An image thing
 
 
     public Player(){
         //mView = view;
-
+        Log.d("Player", "height:" + App.getScreenHeight());
         //todo:add player image
         //mPlayerBitmap = view.getContext().getResources().getDrawable(R.drawable.ship);
-        Resources res = getResources();
+        Resources res = App.getContext().getResources();
         mPlayerBitmap = BitmapFactory.decodeResource(res,R.drawable.ship);
-
         mMaxX -= (mPlayerBitmap.getWidth());
         mMaxY -= (mPlayerBitmap.getHeight());
 
@@ -60,7 +59,7 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
-        //canvas.drawBitmap();
+        canvas.drawBitmap(mPlayerBitmap,mPositionX,mPositionY,paint);
     }
 
     @Override

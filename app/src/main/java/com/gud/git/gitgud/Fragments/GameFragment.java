@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.gud.git.gitgud.Engine.GameEngine;
+import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.R;
 
@@ -29,6 +30,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
         mGameEngine.startGame();
         mGameEngine.addGameObject(new Player());
+        mGameEngine.addGameObject(new Enemy());
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
     }
 

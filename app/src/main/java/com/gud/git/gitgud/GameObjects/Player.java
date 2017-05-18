@@ -4,9 +4,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.Log;
+import android.view.MotionEvent;
 
 
 import com.gud.git.gitgud.App;
@@ -22,21 +24,30 @@ import com.gud.git.gitgud.R;
  * Created by Nue on 5/15/2017.
  */
 
+
+/*
+The positionX and positionY is the centre of the image.
+
+Draw image at position - offset
+*/
+
 public class Player extends GameObject implements Renderable,Updateable{
 
     private int mMaxX,mMaxY;
     private int mWidth,mHeight;
     private double mPixelFactor;
+    private int mOffsetX,mOffsetY;
 
     float mPositionX,mPositionY,mRadius;
 
-    double mSpeedFactor;
+    float mSpeedFactor;
 
-    float maxSpeedNormal,maxSpeedTimeFreeze;
+    float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
 
     boolean touchingMove;
 
     Circle mHitbox;
+
 
 
 
@@ -47,6 +58,7 @@ public class Player extends GameObject implements Renderable,Updateable{
     public Bitmap mPlayerBitmap;
 
     //An image thing
+    boolean collided;
 
     public Player(){
 
@@ -54,7 +66,6 @@ public class Player extends GameObject implements Renderable,Updateable{
 
         Resources res = App.getContext().getResources();
         mPlayerBitmap = BitmapFactory.decodeResource(res,R.drawable.player);
-
 
         //float scaleFactor = ?; //todo:scaling
 
@@ -73,19 +84,36 @@ public class Player extends GameObject implements Renderable,Updateable{
         mMaxY = (App.getScreenHeight() - mPlayerBitmap.getHeight());
 
         mPositionX = 512;
-        mPositionY = 512;
-        mRadius = 5;
+        mPositionY = 700;
+
+        mOffsetX = mPlayerBitmap.getWidth()/2;
+        mOffsetY = mPlayerBitmap.getHeight()/2;
+
+        mRadius = 100;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
-        maxSpeedNormal = 1f;
+        mSpeedFactor = 0.001f;
+        mMaxSpeedNormal = 2f;
+
         touchingMove = false;
+
+        collided = false;
 
     }
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
-        canvas.drawBitmap(mPlayerBitmap,mPositionX,mPositionY,paint);
+        canvas.drawBitmap(mPlayerBitmap,mPositionX-mOffsetX,mPositionY-mOffsetY,paint);
+
+        if (collided){
+            paint.setColor(Color.argb(255, 255, 0, 255));
+        }
+        else {
+            paint.setColor(Color.argb(255, 0, 0, 255));
+        }
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
     }
 
     @Override
@@ -97,9 +125,44 @@ public class Player extends GameObject implements Renderable,Updateable{
     }
 
     void MoveTo(int x, int y){
-        mPositionX = x;
-        mPositionY = y;
-        mHitbox.moveCircle(x,y);
+        float dX = x - mPositionX;
+        float dY = y - mPositionY;
+        float distance = (float)Math.sqrt((dX*dX)+(dY*dY));
+
+        if (distance != 0) {
+
+            float vX = (dX / distance) * mSpeedFactor * mMaxSpeedNormal;
+            float vY = (dY / distance) * mSpeedFactor * mMaxSpeedNormal;
+
+            if (Math.abs(vX) > Math.abs(dX)){
+                mPositionX = x;
+            }
+            else{
+                mPositionX += vX;
+            }
+
+            if (Math.abs(vY) > Math.abs(dY)){
+                mPositionY = y;
+            }
+            else{
+                mPositionY += vY;
+            }
+        }
+
+        mHitbox.moveCircle(mPositionX,mPositionY);
+    }
+
+    public boolean playerCheckCollision(Circle other){
+
+        return mHitbox.intersect(other);
+    }
+
+    public void collidedTrue(){
+        collided = true;
+    }
+
+    public void collidedFalse(){
+        collided = false;
     }
 
 }

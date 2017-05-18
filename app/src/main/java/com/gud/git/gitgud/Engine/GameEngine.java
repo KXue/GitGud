@@ -10,6 +10,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.R;
@@ -22,6 +23,8 @@ import java.util.List;
  */
 
 public class GameEngine {
+
+
     private Paint mPaint;
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
@@ -84,13 +87,25 @@ public class GameEngine {
                 mGameObjects.add(mObjectsToAdd.remove(0));
             }
         }
+        if (numGameObjects == 2 && elapsedMillis > 0) {
+            Player a = (Player) mGameObjects.get(0);
+            Enemy e = (Enemy) mGameObjects.get(1);
+            if (a.playerCheckCollision(e.getEnemyHitbox())){
+                a.collidedTrue();
+                Log.d("Collided","yes");
+            }
+            else{
+                a.collidedFalse();
+            }
+            //Log.d("Collided", "" + a.playerCheckCollision(e.getEnemyHitbox()));
+        }
     }
 
 
     public void onDraw() {
         if(mDrawSurfaceHolder.getSurface().isValid()){
             mCanvas = mDrawSurfaceHolder.lockCanvas();
-            mPaint.setColor(Color.argb(255, 255, 255, 255));
+            mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
             int numGameObjects = mGameObjects.size();

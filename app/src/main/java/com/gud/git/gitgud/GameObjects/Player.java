@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
+import android.view.MotionEvent;
 
 
 import com.gud.git.gitgud.App;
@@ -87,11 +88,9 @@ public class Player extends GameObject implements Renderable,Updateable{
         mOffsetX = mPlayerBitmap.getWidth()/2;
         mOffsetY = mPlayerBitmap.getHeight()/2;
 
-        mHitbox = new Circle(mPositionX,mPositionY,mRadius);
-
-
-
         mRadius = 100;
+
+        mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
         mSpeedFactor = 0.001f;
         mMaxSpeedNormal = 2f;
@@ -115,10 +114,13 @@ public class Player extends GameObject implements Renderable,Updateable{
     }
 
     @Override
-    public void onUpdate(long elapsedMillis, GameEngine gameEngine){
+    public void onUpdate(long elapsedMillis, GameEngine gameEngine) {
         //get input
         //move to
-        MoveTo (1400,400);
+
+        //if (gameEngine.inputcontroller.getouched){
+        //moveTo(
+    //}
 
 
     }

@@ -23,9 +23,9 @@ public class Circle{
         float dX = other.mPositionX - mPositionX;
         float dY = other.mPositionY - mPositionY;
 
-        double distance = (float)Math.sqrt((dX*dX) + (dY*dY));
+        double distance = (dX*dX) + (dY*dY);
 
-        if (distance < (other.mRadius + mRadius)) {
+        if (distance < (other.mRadius + mRadius)*(other.mRadius + mRadius)) {
             collided = true;
         }
 

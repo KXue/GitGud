@@ -85,12 +85,12 @@ public class GameEngine {
                 mGameObjects.add(mObjectsToAdd.remove(0));
             }
         }
-        if (numGameObjects == 2 && elapsedMillis == 1) {
+        if (numGameObjects == 2 && elapsedMillis > 0) {
             Player a = (Player) mGameObjects.get(0);
             Enemy e = (Enemy) mGameObjects.get(1);
             if (a.playerCheckCollision(e.getEnemyHitbox())){
                 a.collidedTrue();
-                //Log.d("Collided","yes");
+                Log.d("Collided","yes");
             }
             else{
                 a.collidedFalse();

@@ -42,7 +42,7 @@ public class Enemy extends GameObject {
         maxSpeedNormal = 0.1f;
 
         Resources res = App.getContext().getResources();
-        mEnemyBitmap = BitmapFactory.decodeResource(res, R.drawable.player);
+        //mEnemyBitmap = BitmapFactory.decodeResource(res, R.drawable.player);
     }
 
     @Override

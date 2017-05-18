@@ -117,7 +117,7 @@ public class Player extends GameObject implements Renderable,Updateable{
     public void onUpdate(long elapsedMillis, GameEngine gameEngine) {
         //get input
         //move to
-
+        MoveTo(1000,400);
         //if (gameEngine.inputcontroller.getouched){
         //moveTo(
     //}

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.util.Log;
 
 
@@ -89,14 +90,15 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
-        //get input
-        //move to
-
+        if(gameEngine.mInputController.getTouched()){
+            PointF newPoint = gameEngine.mInputController.getTouchPoint();
+            MoveTo((int)newPoint.x, (int)newPoint.y);
+        }
     }
 
     void MoveTo(int x, int y){
-        //mPositionX = x;
-        //mPositionY = y;
+        mPositionX = x;
+        mPositionY = y;
         mHitbox.moveCircle(x,y);
     }
 

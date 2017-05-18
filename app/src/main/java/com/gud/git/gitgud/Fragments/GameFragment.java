@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.gud.git.gitgud.Engine.GameEngine;
+import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.R;

@@ -25,13 +25,14 @@ public class GameEngine {
     private Paint mPaint;
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
-    private InputController mInputController;
 
     private List<GameObject> mGameObjects = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToAdd = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToRemove = new ArrayList<GameObject>();
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
+
+    public InputController mInputController;
 
     private int screenWidth, screenHeight;
 
@@ -89,27 +90,15 @@ public class GameEngine {
     public void onDraw() {
         if(mDrawSurfaceHolder.getSurface().isValid()){
             mCanvas = mDrawSurfaceHolder.lockCanvas();
-            mPaint.setColor(Color.argb(255, 0, 0,0));
-            mCanvas.drawColor(Color.argb(255, 0, 0,0));
+            mPaint.setColor(Color.argb(255, 255, 255, 255));
+            mCanvas.drawColor(mPaint.getColor());
+
             int numGameObjects = mGameObjects.size();
             for(int i = 0; i < numGameObjects; i++){
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
             }
 
-            float mx [] = {
-                    -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-                    0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
-                    0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
-                    1.0f,  1.0f,  1.0f,  1.0f,  0.0f
-            };
-            ColorMatrix cm = new ColorMatrix(mx);
 
-            mPaint.setColorFilter(new ColorMatrixColorFilter(cm));
-            mPaint.setColor(Color.argb(0, 0, 0,0));
-
-            mCanvas.drawCircle(960, 540, 100f, mPaint);
-
-            mPaint.setColorFilter(null);
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }

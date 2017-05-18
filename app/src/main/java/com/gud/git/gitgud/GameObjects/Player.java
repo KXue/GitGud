@@ -25,7 +25,6 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     private int mMaxX,mMaxY;
     private double mPixelFactor;
-
     float mPositionX,mPositionY;
     double mSpeedFactor;
 
@@ -41,20 +40,18 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     //An image thing
 
-
     public Player(){
         //mView = view;
+
         Log.d("Player", "height:" + App.getScreenHeight());
         //todo:add player image
         //mPlayerBitmap = view.getContext().getResources().getDrawable(R.drawable.ship);
         Resources res = App.getContext().getResources();
-        mPlayerBitmap = BitmapFactory.decodeResource(res,R.drawable.ship);
+        mPlayerBitmap = BitmapFactory.decodeResource(res,R.drawable.player);
         mMaxX -= (mPlayerBitmap.getWidth());
         mMaxY -= (mPlayerBitmap.getHeight());
-
         mPositionX = 512;
         mPositionY = 512;
-
     }
 
     @Override

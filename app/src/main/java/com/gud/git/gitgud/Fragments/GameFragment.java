@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.GameObjects.Player;
+import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.R;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener{
@@ -27,6 +28,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         super.onViewCreated(view, savedInstanceState);
         mGameEngine = new GameEngine();
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
+        mGameEngine.setInputController(new InputController(getView()));
         mGameEngine.startGame();
         mGameEngine.addGameObject(new Player());
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
@@ -35,6 +37,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
+        if(v.getId() == R.id.btn_play_pause){
 
+        }
     }
 }

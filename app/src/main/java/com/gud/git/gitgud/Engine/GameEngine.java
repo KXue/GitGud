@@ -2,6 +2,8 @@ package com.gud.git.gitgud.Engine;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.Surface;
@@ -9,6 +11,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.gud.git.gitgud.GameObjects.Player;
+import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.R;
 
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ public class GameEngine {
     private Paint mPaint;
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
+    private InputController mInputController;
 
     private List<GameObject> mGameObjects = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToAdd = new ArrayList<GameObject>();
@@ -32,16 +36,10 @@ public class GameEngine {
     private int screenWidth, screenHeight;
 
     public GameEngine(){
-
         mPaint = new Paint();
     }
     public void startGame(){
         stopGame();
-
-//        int numGameObjects = mGameObjects.size();
-//        for(int i = 0; i < numGameObjects; i++){
-//            mGameObjects.get(i).startGame();
-//        }
 
         mUpdateThread = new UpdateThread(this);
         mUpdateThread.start();
@@ -60,6 +58,9 @@ public class GameEngine {
     //must be called to
     public void setDrawSurfaceHolder(SurfaceHolder surfaceHolder){
         mDrawSurfaceHolder = surfaceHolder;
+    }
+    public void setInputController(InputController inputController){
+        mInputController = inputController;
     }
 
     public void addGameObject(GameObject obj){
@@ -91,10 +92,24 @@ public class GameEngine {
             mPaint.setColor(Color.argb(255, 0, 0,0));
             mCanvas.drawColor(Color.argb(255, 0, 0,0));
             int numGameObjects = mGameObjects.size();
-//            Log.d("Engine", numGameObjects + "");
             for(int i = 0; i < numGameObjects; i++){
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
             }
+
+            float mx [] = {
+                    -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+                    0.0f,  -1.0f,  0.0f,  1.0f,  0.0f,
+                    0.0f,  0.0f,  -1.0f,  1.0f,  0.0f,
+                    1.0f,  1.0f,  1.0f,  1.0f,  0.0f
+            };
+            ColorMatrix cm = new ColorMatrix(mx);
+
+            mPaint.setColorFilter(new ColorMatrixColorFilter(cm));
+            mPaint.setColor(Color.argb(0, 0, 0,0));
+
+            mCanvas.drawCircle(960, 540, 100f, mPaint);
+
+            mPaint.setColorFilter(null);
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }

@@ -28,6 +28,7 @@ public class Player extends GameObject implements Renderable,Updateable{
     private double mPixelFactor;
 
     float mPositionX,mPositionY,mRadius;
+
     double mSpeedFactor;
 
     float maxSpeedNormal,maxSpeedTimeFreeze;
@@ -45,7 +46,6 @@ public class Player extends GameObject implements Renderable,Updateable{
     public Bitmap mPlayerBitmap;
 
     //An image thing
-
 
     public Player(){
 
@@ -79,6 +79,7 @@ public class Player extends GameObject implements Renderable,Updateable{
 
         maxSpeedNormal = 1f;
         touchingMove = false;
+
     }
 
     @Override

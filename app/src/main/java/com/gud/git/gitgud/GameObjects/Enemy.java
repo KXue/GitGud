@@ -29,6 +29,8 @@ public class Enemy extends GameObject {
 
     float maxSpeedNormal,maxSpeedTimeFreeze;
 
+    final float MAX_SPEED_NORMAL = 1f;
+
     Circle mHitbox;
     public Bitmap mEnemyBitmap;
 
@@ -54,17 +56,17 @@ public class Enemy extends GameObject {
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
+        if (elapsedMillis >= 1) {
+            //Log.d("elapsedMillis", ""+elapsedMillis);
+            if (mPositionX <= 0) {
+                maxSpeedNormal = MAX_SPEED_NORMAL * elapsedMillis;
+            } else if (mPositionX >= 1920) {
+                maxSpeedNormal = -MAX_SPEED_NORMAL * elapsedMillis;
+            }
 
-        //Log.d("elapsedMillis", ""+elapsedMillis);
-        if (mPositionX <= 0){
-            maxSpeedNormal = 0.01f *elapsedMillis ;
+            mPositionX += maxSpeedNormal;
+            mHitbox.moveCircle(mPositionX, mPositionY);
         }
-        else if (mPositionX >= 1920){
-            maxSpeedNormal = -0.01f *elapsedMillis;
-        }
-
-        mPositionX += maxSpeedNormal;
-        mHitbox.moveCircle(mPositionX,mPositionY);
 
     }
 

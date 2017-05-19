@@ -33,6 +33,7 @@ Draw image at position - offset
 
 public class Player extends GameObject implements Renderable,Updateable{
 
+    private int mMinX,mMinY;
     private int mMaxX,mMaxY;
     private int mWidth,mHeight;
     private double mPixelFactor;
@@ -48,7 +49,13 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     Circle mHitbox;
 
+    boolean mIsInvincible;
 
+    // Invincible time in milliseconds
+    long mInvincibleTime;
+    final long INVINCIBLE_TIME = 3000;
+
+    int zero = 0;
 
 
     //A collision thing
@@ -72,16 +79,19 @@ public class Player extends GameObject implements Renderable,Updateable{
         mWidth = mPlayerBitmap.getWidth();
         mHeight = mPlayerBitmap.getHeight();
 
-        mWidth = 200;
-        mHeight = 200;
+        mWidth = 150;
+        mHeight = 150;
 
         mPlayerBitmap = Bitmap.createScaledBitmap(mPlayerBitmap,mWidth,mHeight,true);
 
         Log.d("player width",""+mWidth);
         Log.d("player height",""+mWidth);
 
-        mMaxX = (App.getScreenWidth() - mPlayerBitmap.getWidth());
-        mMaxY = (App.getScreenHeight() - mPlayerBitmap.getHeight());
+        mMaxX = (App.getScreenWidth() - mPlayerBitmap.getWidth()/2);
+        mMaxY = (App.getScreenHeight() - mPlayerBitmap.getHeight()/2);
+
+        mMinX = 0 + mPlayerBitmap.getWidth()/2;
+        mMinY = 0 + mPlayerBitmap.getHeight()/2;
 
         mPositionX = 512;
         mPositionY = 700;
@@ -89,7 +99,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         mOffsetX = mPlayerBitmap.getWidth()/2;
         mOffsetY = mPlayerBitmap.getHeight()/2;
 
-        mRadius = 100;
+        mRadius = mWidth*0.5f;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
@@ -100,11 +110,22 @@ public class Player extends GameObject implements Renderable,Updateable{
 
         collided = false;
 
+        mIsInvincible = true;
+        mInvincibleTime = INVINCIBLE_TIME;
     }
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
-        canvas.drawBitmap(mPlayerBitmap,mPositionX-mOffsetX,mPositionY-mOffsetY,paint);
+        if (mIsInvincible){
+            paint.setAlpha(50);
+        }
+        else {
+            paint.setAlpha(255);
+        }
+
+        canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
+
+        paint.setAlpha(255);
 
         if (collided){
             paint.setColor(Color.argb(255, 255, 0, 255));
@@ -118,21 +139,40 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
-        if(gameEngine.mInputController.getTouched()){
-            PointF newPoint = gameEngine.mInputController.getTouchPoint();
-            MoveTo((int)newPoint.x, (int)newPoint.y);
+        //Log.d("elasped",""+elapsedMillis);
+        if (elapsedMillis == 0){
+            zero++;
+        }
+
+        else if (elapsedMillis >= 1){
+            Log.d("elasped 0",""+zero);
+            zero = 0;
+        }
+
+        if (elapsedMillis >= 1) {
+            if (mIsInvincible) {
+                mInvincibleTime -= elapsedMillis;
+                Log.d("invincible time", "" + mInvincibleTime);
+                if (mInvincibleTime <= 0) {
+                    mIsInvincible = false;
+                }
+            }
+            if (gameEngine.mInputController.getTouched()) {
+                PointF newPoint = gameEngine.mInputController.getTouchPoint();
+                moveTo(newPoint.x, newPoint.y, elapsedMillis);
+            }
         }
     }
 
-    void MoveTo(int x, int y){
+    void moveTo(float x, float y, long elapsedMillis){
         float dX = x - mPositionX;
         float dY = y - mPositionY;
         float distance = (float)Math.sqrt((dX*dX)+(dY*dY));
 
         if (distance != 0) {
 
-            float vX = (dX / distance) * mSpeedFactor * mMaxSpeedNormal;
-            float vY = (dY / distance) * mSpeedFactor * mMaxSpeedNormal;
+            float vX = (dX / distance) * mMaxSpeedNormal * elapsedMillis;
+            float vY = (dY / distance) * mMaxSpeedNormal * elapsedMillis;
 
             if (Math.abs(vX) > Math.abs(dX)){
                 mPositionX = x;
@@ -149,6 +189,19 @@ public class Player extends GameObject implements Renderable,Updateable{
             }
         }
 
+        if (mPositionX < mMinX){
+            mPositionX = mMinX;
+        }
+        if (mPositionX > mMaxX){
+            mPositionX = mMaxX;
+        }
+        if (mPositionY < mMinY){
+            mPositionY = mMinY;
+        }
+        if (mPositionY > mMaxY){
+            mPositionY = mMaxY;
+        }
+
         mHitbox.moveCircle(mPositionX,mPositionY);
     }
 
@@ -163,6 +216,16 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     public void collidedFalse(){
         collided = false;
+    }
+
+    public void playerDie(){
+        if (!mIsInvincible) {
+            mPositionX = App.getScreenWidth() / 2;
+            mPositionY = App.getScreenHeight() / 2;
+            mHitbox.moveCircle(mPositionX,mPositionY);
+            mIsInvincible = true;
+            mInvincibleTime = INVINCIBLE_TIME;
+        }
     }
 
 }

@@ -92,6 +92,7 @@ public class GameEngine {
             Enemy e = (Enemy) mGameObjects.get(1);
             if (a.playerCheckCollision(e.getEnemyHitbox())){
                 a.collidedTrue();
+                a.playerDie();
                 Log.d("Collided","yes");
             }
             else{

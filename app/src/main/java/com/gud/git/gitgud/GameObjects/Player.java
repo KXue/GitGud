@@ -45,8 +45,6 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
 
-    boolean touchingMove;
-
     Circle mHitbox;
 
     boolean mIsInvincible;
@@ -55,17 +53,10 @@ public class Player extends GameObject implements Renderable,Updateable{
     long mInvincibleTime;
     final long INVINCIBLE_TIME = 3000;
 
-    int zero = 0;
-
-
-    //A collision thing
-    //elipse 2d
-
     //todo:animated?
     public Bitmap mPlayerBitmap;
 
-    //An image thing
-    boolean collided;
+    boolean collided; //debug collision
 
     public Player(){
 
@@ -106,16 +97,16 @@ public class Player extends GameObject implements Renderable,Updateable{
         mSpeedFactor = 0.001f;
         mMaxSpeedNormal = 2f;
 
-        touchingMove = false;
-
-        collided = false;
-
         mIsInvincible = true;
         mInvincibleTime = INVINCIBLE_TIME;
+
+        collided = false; //for debug
     }
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
+
+        //debug circle
         if (mIsInvincible){
             paint.setAlpha(50);
         }
@@ -123,8 +114,11 @@ public class Player extends GameObject implements Renderable,Updateable{
             paint.setAlpha(255);
         }
 
+        //DRAW THE PLAYER
         canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
 
+
+        //debug circle
         paint.setAlpha(255);
 
         if (collided){
@@ -139,15 +133,6 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
-        //Log.d("elasped",""+elapsedMillis);
-        if (elapsedMillis == 0){
-            zero++;
-        }
-
-        else if (elapsedMillis >= 1){
-            Log.d("elasped 0",""+zero);
-            zero = 0;
-        }
 
         if (elapsedMillis >= 1) {
             if (mIsInvincible) {
@@ -218,6 +203,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         collided = false;
     }
 
+
     public void playerDie(){
         if (!mIsInvincible) {
             mPositionX = App.getScreenWidth() / 2;
@@ -226,6 +212,28 @@ public class Player extends GameObject implements Renderable,Updateable{
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;
         }
+    }
+
+    @Override
+    public boolean checkCollision(GameObject other){
+        boolean retVal = false;
+        if (other instanceof Enemy){
+
+            if (playerCheckCollision(other.getHitbox())){
+                playerDie();
+                ((Enemy) other).enemyDie();
+                retVal = true;
+            }
+        }
+        else{
+            Log.d("Player","this is a game object and idk what it is");
+        }
+        return retVal;
+    }
+
+    @Override
+    public Circle getHitbox(){
+        return mHitbox;
     }
 
 }

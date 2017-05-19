@@ -57,7 +57,6 @@ public class Enemy extends GameObject {
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
         if (elapsedMillis >= 1) {
-            //Log.d("elapsedMillis", ""+elapsedMillis);
             if (mPositionX <= 0) {
                 maxSpeedNormal = MAX_SPEED_NORMAL * elapsedMillis;
             } else if (mPositionX >= 1920) {
@@ -70,7 +69,18 @@ public class Enemy extends GameObject {
 
     }
 
-    public Circle getEnemyHitbox(){
+    @Override
+    public Circle getHitbox(){
         return mHitbox;
     }
+
+    @Override
+    public boolean checkCollision(GameObject other) {
+        return false;
+    }
+
+    public void enemyDie(){
+
+    }
+
 }

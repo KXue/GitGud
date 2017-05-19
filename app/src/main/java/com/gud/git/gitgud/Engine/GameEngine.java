@@ -87,19 +87,7 @@ public class GameEngine {
                 mGameObjects.add(mObjectsToAdd.remove(0));
             }
         }
-        if (numGameObjects == 2 && elapsedMillis > 0) {
-            Player a = (Player) mGameObjects.get(0);
-            Enemy e = (Enemy) mGameObjects.get(1);
-            if (a.playerCheckCollision(e.getEnemyHitbox())){
-                a.collidedTrue();
-                a.playerDie();
-                Log.d("Collided","yes");
-            }
-            else{
-                a.collidedFalse();
-            }
-            //Log.d("Collided", "" + a.playerCheckCollision(e.getEnemyHitbox()));
-        }
+        checkCollision();
     }
 
 
@@ -116,6 +104,21 @@ public class GameEngine {
 
 
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
+        }
+    }
+
+    public void checkCollision(){
+
+        int numGameObjects = mGameObjects.size();
+        for (int i=0; i<numGameObjects-1; i++) {
+            for (int j=i+1; j<numGameObjects; j++) {
+                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j))){
+                    removeGameObject(mGameObjects.get(j));
+                    j--;
+                    numGameObjects--;
+                }
+
+            }
         }
     }
 }

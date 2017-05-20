@@ -32,7 +32,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         mGameEngine.setInputController(new InputController(getView()));
         mGameEngine.startGame();
         mGameEngine.addGameObject(new Player());
-        mGameEngine.addGameObject(new Enemy());
+        mGameEngine.addGameObject(new Enemy(1920,1080));
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
     }
 

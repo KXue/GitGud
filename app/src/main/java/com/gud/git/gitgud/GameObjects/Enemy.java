@@ -27,24 +27,52 @@ public class Enemy extends GameObject {
     float mPositionX,mPositionY,mRadius;
     double mSpeedFactor;
 
-    float maxSpeedNormal,maxSpeedTimeFreeze;
+    float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
 
     final float MAX_SPEED_NORMAL = 1f;
 
     Circle mHitbox;
     public Bitmap mEnemyBitmap;
 
-    public Enemy() {
-        mPositionX = 0;
-        mPositionY = 450;
+    public Enemy(float startX, float startY) {
+        mPositionX = startX;
+        mPositionY = startY;
         mRadius = 100;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
-        maxSpeedNormal = 0.1f;
+        mMaxSpeedNormal = 0.2f;
 
         Resources res = App.getContext().getResources();
         //mEnemyBitmap = BitmapFactory.decodeResource(res, R.drawable.player);
+    }
+
+    void moveTo(float x, float y, long elapsedMillis){
+        float dX = x - mPositionX;
+        float dY = y - mPositionY;
+        float distance = (float)Math.sqrt((dX*dX)+(dY*dY));
+
+        if (distance != 0) {
+
+            float vX = (dX / distance) * mMaxSpeedNormal * elapsedMillis;
+            float vY = (dY / distance) * mMaxSpeedNormal * elapsedMillis;
+
+            if (Math.abs(vX) > Math.abs(dX)){
+                mPositionX = x;
+            }
+            else{
+                mPositionX += vX;
+            }
+
+            if (Math.abs(vY) > Math.abs(dY)){
+                mPositionY = y;
+            }
+            else{
+                mPositionY += vY;
+            }
+        }
+
+        mHitbox.moveCircle(mPositionX,mPositionY);
     }
 
     @Override
@@ -57,14 +85,15 @@ public class Enemy extends GameObject {
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
         if (elapsedMillis >= 1) {
+            /*
             if (mPositionX <= 0) {
                 maxSpeedNormal = MAX_SPEED_NORMAL * elapsedMillis;
             } else if (mPositionX >= 1920) {
                 maxSpeedNormal = -MAX_SPEED_NORMAL * elapsedMillis;
             }
+            */
 
-            mPositionX += maxSpeedNormal;
-            mHitbox.moveCircle(mPositionX, mPositionY);
+            moveTo(960,540,elapsedMillis);
         }
 
     }

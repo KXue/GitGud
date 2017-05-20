@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 import java.util.ArrayList;
@@ -35,12 +36,15 @@ public class GameEngine {
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
+    private GameManager mGameManager;
+
     public InputController mInputController;
 
     private int screenWidth, screenHeight;
 
     public GameEngine(){
         mPaint = new Paint();
+        mGameManager = new GameManager();
     }
     public void startGame(){
         stopGame();
@@ -75,6 +79,8 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
+        mGameManager.onUpdate(elapsedMillis,this);
+
         int numGameObjects = mGameObjects.size();
         for (int i=0; i<numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);

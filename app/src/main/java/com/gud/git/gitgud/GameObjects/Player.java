@@ -137,7 +137,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         if (elapsedMillis >= 1) {
             if (mIsInvincible) {
                 mInvincibleTime -= elapsedMillis;
-                Log.d("invincible time", "" + mInvincibleTime);
+                //Log.d("invincible time", "" + mInvincibleTime);
                 if (mInvincibleTime <= 0) {
                     mIsInvincible = false;
                 }

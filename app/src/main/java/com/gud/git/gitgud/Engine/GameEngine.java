@@ -36,6 +36,8 @@ public class GameEngine {
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
+    private int mNumGameObjects;
+
     private GameManager mGameManager;
 
     public InputController mInputController;
@@ -54,6 +56,8 @@ public class GameEngine {
 
         mDrawThread = new DrawThread(this);
         mDrawThread.start();
+
+        mNumGameObjects = 0;
     }
     public void stopGame() {
         if(mUpdateThread != null){
@@ -88,9 +92,12 @@ public class GameEngine {
         synchronized (mGameObjects) {
             while (!mObjectsToRemove.isEmpty()) {
                 mGameObjects.remove(mObjectsToRemove.remove(0));
+                mNumGameObjects--;
+                //Log.d("gameEngine","GameObject removed");
             }
             while (!mObjectsToAdd.isEmpty()) {
                 mGameObjects.add(mObjectsToAdd.remove(0));
+                mNumGameObjects++;
             }
         }
         checkCollision();
@@ -103,10 +110,15 @@ public class GameEngine {
             mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
-            int numGameObjects = mGameObjects.size();
-            for(int i = 0; i < numGameObjects; i++){
+            //int numGameObjects = mGameObjects.size();
+            //Log.d("gameEngine onDraw START","numGameObjects:"+mNumGameObjects);
+            for(int i = 0; i < mNumGameObjects; i++){
+                //Log.d("gameEngine onDrawonDraw","numGameObjects:"+mNumGameObjects);
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
+
             }
+            //Log.d("gameEngine onDraw","END");
+
 
 
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
@@ -118,10 +130,14 @@ public class GameEngine {
         int numGameObjects = mGameObjects.size();
         for (int i=0; i<numGameObjects-1; i++) {
             for (int j=i+1; j<numGameObjects; j++) {
+                //Log.d("checkCollision","j="+j);
+                //Log.d("checkCollision","check "+i+" "+j);
                 if (mGameObjects.get(i).checkCollision(mGameObjects.get(j))){
                     removeGameObject(mGameObjects.get(j));
-                    j--;
-                    numGameObjects--;
+                    //Log.d("checkCollision",mGameObjects.get(j).toString());
+                    //Log.d("checkCollision","remove gameobject index "+j);
+                    //Log.d("checkCollision","gameobjects remaining:"+numGameObjects);
+
                 }
 
             }

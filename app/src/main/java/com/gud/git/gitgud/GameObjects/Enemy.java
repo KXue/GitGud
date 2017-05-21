@@ -26,6 +26,7 @@ public class Enemy extends GameObject {
 
     float mPositionX,mPositionY,mRadius;
     double mSpeedFactor;
+    int mMoveType;
 
     float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
 
@@ -34,7 +35,7 @@ public class Enemy extends GameObject {
     Circle mHitbox;
     public Bitmap mEnemyBitmap;
 
-    public Enemy(float startX, float startY) {
+    public Enemy(float startX, float startY, int moveType) {
         mPositionX = startX;
         mPositionY = startY;
         mRadius = 100;
@@ -42,37 +43,45 @@ public class Enemy extends GameObject {
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
         mMaxSpeedNormal = 0.2f;
+        mMoveType = moveType;
 
         Resources res = App.getContext().getResources();
         //mEnemyBitmap = BitmapFactory.decodeResource(res, R.drawable.player);
     }
 
-    void moveTo(float x, float y, long elapsedMillis){
+    void moveTo(float x, float y, long elapsedMillis) {
         float dX = x - mPositionX;
         float dY = y - mPositionY;
-        float distance = (float)Math.sqrt((dX*dX)+(dY*dY));
+        float distance = (float) Math.sqrt((dX * dX) + (dY * dY));
+
 
         if (distance != 0) {
+            float vX = 0;
+            float vY = 0;
+            if (mMoveType == 0) {
+                vX = (dX / distance) * mMaxSpeedNormal * elapsedMillis;
+                vY = (dY / distance) * mMaxSpeedNormal * elapsedMillis;
 
-            float vX = (dX / distance) * mMaxSpeedNormal * elapsedMillis;
-            float vY = (dY / distance) * mMaxSpeedNormal * elapsedMillis;
-
-            if (Math.abs(vX) > Math.abs(dX)){
-                mPositionX = x;
+            } else if (mMoveType == 1) {
+                vX = mMaxSpeedNormal * elapsedMillis;
+                vY = mMaxSpeedNormal * elapsedMillis;
             }
-            else{
+
+            if (Math.abs(vX) > Math.abs(dX)) {
+                mPositionX = x;
+            } else {
                 mPositionX += vX;
             }
 
-            if (Math.abs(vY) > Math.abs(dY)){
+            if (Math.abs(vY) > Math.abs(dY)) {
                 mPositionY = y;
-            }
-            else{
+            } else {
                 mPositionY += vY;
             }
         }
 
-        mHitbox.moveCircle(mPositionX,mPositionY);
+
+        mHitbox.moveCircle(mPositionX, mPositionY);
     }
 
     @Override

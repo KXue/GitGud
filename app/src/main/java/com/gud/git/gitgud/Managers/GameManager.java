@@ -34,7 +34,7 @@ public class GameManager implements Updateable{
         if (elapsedMillis >= 1){
             mTime += elapsedMillis;
 
-            if (mTime >= 6000){
+            if (mTime >= 1000){
                 mTime = 0;
                 int centreX = 960;
                 int centreY = 540;

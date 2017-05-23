@@ -23,6 +23,7 @@ public class Enemy extends GameObject {
     private int mWidth,mHeight;
 
     private double mPixelFactor;
+    private int mOffsetX,mOffsetY;
 
     float mPositionX,mPositionY,mRadius;
     double mSpeedFactor;
@@ -33,20 +34,40 @@ public class Enemy extends GameObject {
     final float MAX_SPEED_NORMAL = 1f;
 
     Circle mHitbox;
-    public Bitmap mEnemyBitmap;
+    public static Bitmap mEnemyBitmap;
+    static boolean bitmapCreated = false;
 
     public Enemy(float startX, float startY, int moveType) {
+
+        if (!bitmapCreated){
+            bitmapCreated = true;
+
+            Resources res = App.getContext().getResources();
+            mEnemyBitmap = BitmapFactory.decodeResource(res,R.drawable.enemy);
+            mWidth = mEnemyBitmap.getWidth();
+            mHeight = mEnemyBitmap.getHeight();
+
+            mWidth = 150;
+            mHeight = 150;
+
+            mEnemyBitmap = Bitmap.createScaledBitmap(mEnemyBitmap,mWidth,mHeight,true);
+        }
+
+        mWidth = 150;
+        mHeight = 150;
+
         mPositionX = startX;
         mPositionY = startY;
-        mRadius = 100;
+        mRadius = mWidth*0.5f;
+
+        mOffsetX = mEnemyBitmap.getWidth()/2;
+        mOffsetY = mEnemyBitmap.getHeight()/2;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
         mMaxSpeedNormal = 0.2f;
         mMoveType = moveType;
 
-        Resources res = App.getContext().getResources();
-        //mEnemyBitmap = BitmapFactory.decodeResource(res, R.drawable.player);
     }
 
     void moveTo(float x, float y, long elapsedMillis) {
@@ -63,8 +84,18 @@ public class Enemy extends GameObject {
                 vY = (dY / distance) * mMaxSpeedNormal * elapsedMillis;
 
             } else if (mMoveType == 1) {
-                vX = mMaxSpeedNormal * elapsedMillis;
-                vY = mMaxSpeedNormal * elapsedMillis;
+                if (mPositionX > x){
+                    vX = -mMaxSpeedNormal * elapsedMillis;
+                }
+                else if (mPositionX < x){
+                    vX = mMaxSpeedNormal * elapsedMillis;
+                }
+                if (mPositionY > y){
+                    vY = -mMaxSpeedNormal * elapsedMillis;
+                }
+                else if (mPositionY < y){
+                    vY = mMaxSpeedNormal * elapsedMillis;
+                }
             }
 
             if (Math.abs(vX) > Math.abs(dX)) {
@@ -86,6 +117,9 @@ public class Enemy extends GameObject {
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
+        //draw the enemy
+        canvas.drawBitmap(mEnemyBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
+
         paint.setColor(Color.argb(255, 0, 255,0));
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);

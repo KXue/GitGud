@@ -17,6 +17,7 @@ import com.gud.git.gitgud.R;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener{
     private GameEngine mGameEngine;
+    Player mPlayer;
 
     public GameFragment() {
         // Required empty public constructor
@@ -31,7 +32,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
         mGameEngine.setInputController(new InputController(getView()));
         mGameEngine.startGame();
-        mGameEngine.addGameObject(new Player());
+        mPlayer = new Player();
+        mGameEngine.addGameObject(mPlayer);
+        mGameEngine.setPlayer();
         mGameEngine.addGameObject(new Enemy(1920,1080,0));
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
     }

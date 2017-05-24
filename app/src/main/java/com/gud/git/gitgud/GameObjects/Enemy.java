@@ -12,6 +12,7 @@ import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.Circle;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 /**
@@ -135,8 +136,10 @@ public class Enemy extends GameObject {
                 maxSpeedNormal = -MAX_SPEED_NORMAL * elapsedMillis;
             }
             */
+            if (!gameEngine.getmGameManager().getTimeFreezeActivated()){
+                moveTo(960,540,elapsedMillis);
+            }
 
-            moveTo(960,540,elapsedMillis);
         }
 
     }
@@ -147,7 +150,7 @@ public class Enemy extends GameObject {
     }
 
     @Override
-    public boolean checkCollision(GameObject other) {
+    public boolean checkCollision(GameObject other, GameManager gameManager) {
         return false;
     }
 

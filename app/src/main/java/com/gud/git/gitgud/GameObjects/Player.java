@@ -17,6 +17,7 @@ import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
 import com.gud.git.gitgud.Engine.Updateable;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 
@@ -146,6 +147,14 @@ public class Player extends GameObject implements Renderable,Updateable{
                 PointF newPoint = gameEngine.mInputController.getTouchPoint();
                 moveTo(newPoint.x, newPoint.y, elapsedMillis);
             }
+
+            //temp timefreeze stuff
+            if (mPositionX < 500){
+                gameEngine.getmGameManager().setTimeFreeze(true);
+            }
+            if (mPositionX > 1500){
+                gameEngine.getmGameManager().setTimeFreeze(false);
+            }
         }
     }
 
@@ -215,13 +224,19 @@ public class Player extends GameObject implements Renderable,Updateable{
     }
 
     @Override
-    public boolean checkCollision(GameObject other){
+    public boolean checkCollision(GameObject other, GameManager gameManager){
         boolean retVal = false;
         if (other instanceof Enemy){
 
             if (playerCheckCollision(other.getHitbox())){
-                playerDie();
-                ((Enemy) other).enemyDie();
+                Log.d("Player checkCollision",""+gameManager.getTimeFreezeActivated());
+                if (gameManager.getTimeFreezeActivated()) {
+                    //((Enemy) other).enemyDie();
+                    // Enemy removed in gameEngine check collision
+                }
+                else{
+                    playerDie();
+                }
                 retVal = true;
             }
         }

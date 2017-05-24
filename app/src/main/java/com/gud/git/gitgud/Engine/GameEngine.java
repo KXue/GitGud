@@ -112,14 +112,14 @@ public class GameEngine {
 
             //int numGameObjects = mGameObjects.size();
             //Log.d("gameEngine onDraw START","numGameObjects:"+mNumGameObjects);
-            for(int i = 0; i < mNumGameObjects; i++){
+            for(int i = 1; i < mNumGameObjects; i++){
                 //Log.d("gameEngine onDrawonDraw","numGameObjects:"+mNumGameObjects);
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
 
             }
             //Log.d("gameEngine onDraw","END");
 
-
+            mGameObjects.get(0).onDraw(mPaint, mCanvas);
 
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
@@ -132,8 +132,14 @@ public class GameEngine {
             for (int j=i+1; j<numGameObjects; j++) {
                 //Log.d("checkCollision","j="+j);
                 //Log.d("checkCollision","check "+i+" "+j);
-                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j))){
-                    removeGameObject(mGameObjects.get(j));
+                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j),mGameManager)){
+
+                    if (mGameManager.getTimeFreezeActivated()){
+                        removeGameObject(mGameObjects.get(j));
+                    }
+                    else{
+
+                    }
                     //Log.d("checkCollision",mGameObjects.get(j).toString());
                     //Log.d("checkCollision","remove gameobject index "+j);
                     //Log.d("checkCollision","gameobjects remaining:"+numGameObjects);
@@ -142,5 +148,10 @@ public class GameEngine {
 
             }
         }
+    }
+
+    //temp thing for player
+    public GameManager getmGameManager(){
+        return mGameManager;
     }
 }

@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 import java.util.ArrayList;
@@ -35,12 +36,17 @@ public class GameEngine {
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
+    private int mNumGameObjects;
+
+    private GameManager mGameManager;
+
     public InputController mInputController;
 
     private int screenWidth, screenHeight;
 
     public GameEngine(){
         mPaint = new Paint();
+        mGameManager = new GameManager();
     }
     public void startGame(){
         stopGame();
@@ -50,6 +56,8 @@ public class GameEngine {
 
         mDrawThread = new DrawThread(this);
         mDrawThread.start();
+
+        mNumGameObjects = 0;
     }
     public void stopGame() {
         if(mUpdateThread != null){
@@ -75,6 +83,8 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
+        mGameManager.onUpdate(elapsedMillis,this);
+
         int numGameObjects = mGameObjects.size();
         for (int i=0; i<numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);
@@ -82,24 +92,15 @@ public class GameEngine {
         synchronized (mGameObjects) {
             while (!mObjectsToRemove.isEmpty()) {
                 mGameObjects.remove(mObjectsToRemove.remove(0));
+                mNumGameObjects--;
+                //Log.d("gameEngine","GameObject removed");
             }
             while (!mObjectsToAdd.isEmpty()) {
                 mGameObjects.add(mObjectsToAdd.remove(0));
+                mNumGameObjects++;
             }
         }
-        if (numGameObjects == 2 && elapsedMillis > 0) {
-            Player a = (Player) mGameObjects.get(0);
-            Enemy e = (Enemy) mGameObjects.get(1);
-            if (a.playerCheckCollision(e.getEnemyHitbox())){
-                a.collidedTrue();
-                a.playerDie();
-                Log.d("Collided","yes");
-            }
-            else{
-                a.collidedFalse();
-            }
-            //Log.d("Collided", "" + a.playerCheckCollision(e.getEnemyHitbox()));
-        }
+        checkCollision();
     }
 
 
@@ -109,13 +110,48 @@ public class GameEngine {
             mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
-            int numGameObjects = mGameObjects.size();
-            for(int i = 0; i < numGameObjects; i++){
+            //int numGameObjects = mGameObjects.size();
+            //Log.d("gameEngine onDraw START","numGameObjects:"+mNumGameObjects);
+            for(int i = 1; i < mNumGameObjects; i++){
+                //Log.d("gameEngine onDrawonDraw","numGameObjects:"+mNumGameObjects);
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
-            }
 
+            }
+            //Log.d("gameEngine onDraw","END");
+
+            mGameObjects.get(0).onDraw(mPaint, mCanvas);
 
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
+    }
+
+    public void checkCollision(){
+
+        int numGameObjects = mGameObjects.size();
+        for (int i=0; i<numGameObjects-1; i++) {
+            for (int j=i+1; j<numGameObjects; j++) {
+                //Log.d("checkCollision","j="+j);
+                //Log.d("checkCollision","check "+i+" "+j);
+                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j),mGameManager)){
+
+                    if (mGameManager.getTimeFreezeActivated()){
+                        removeGameObject(mGameObjects.get(j));
+                    }
+                    else{
+
+                    }
+                    //Log.d("checkCollision",mGameObjects.get(j).toString());
+                    //Log.d("checkCollision","remove gameobject index "+j);
+                    //Log.d("checkCollision","gameobjects remaining:"+numGameObjects);
+
+                }
+
+            }
+        }
+    }
+
+    //temp thing for player
+    public GameManager getmGameManager(){
+        return mGameManager;
     }
 }

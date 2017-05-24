@@ -17,6 +17,7 @@ import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
 import com.gud.git.gitgud.Engine.Updateable;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 
@@ -45,8 +46,6 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
 
-    boolean touchingMove;
-
     Circle mHitbox;
 
     boolean mIsInvincible;
@@ -55,17 +54,10 @@ public class Player extends GameObject implements Renderable,Updateable{
     long mInvincibleTime;
     final long INVINCIBLE_TIME = 3000;
 
-    int zero = 0;
-
-
-    //A collision thing
-    //elipse 2d
-
     //todo:animated?
     public Bitmap mPlayerBitmap;
 
-    //An image thing
-    boolean collided;
+    boolean collided; //debug collision
 
     public Player(){
 
@@ -106,16 +98,16 @@ public class Player extends GameObject implements Renderable,Updateable{
         mSpeedFactor = 0.001f;
         mMaxSpeedNormal = 2f;
 
-        touchingMove = false;
-
-        collided = false;
-
         mIsInvincible = true;
         mInvincibleTime = INVINCIBLE_TIME;
+
+        collided = false; //for debug
     }
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
+
+        //debug circle
         if (mIsInvincible){
             paint.setAlpha(50);
         }
@@ -123,8 +115,11 @@ public class Player extends GameObject implements Renderable,Updateable{
             paint.setAlpha(255);
         }
 
+        //DRAW THE PLAYER
         canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
 
+
+        //debug circle
         paint.setAlpha(255);
 
         if (collided){
@@ -139,11 +134,20 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
+
         if (mIsInvincible) {
             mInvincibleTime -= elapsedMillis;
+            //Log.d("invincible time", "" + mInvincibleTime);
             if (mInvincibleTime <= 0) {
                 mIsInvincible = false;
             }
+        }
+//        temp timefreeze stuff
+        if (mPositionX < 500){
+            gameEngine.getmGameManager().setTimeFreeze(true);
+        }
+        if (mPositionX > 1500){
+            gameEngine.getmGameManager().setTimeFreeze(false);
         }
         if (gameEngine.mInputController.getTouched()) {
             PointF newPoint = gameEngine.mInputController.getTouchPoint();
@@ -205,6 +209,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         collided = false;
     }
 
+
     public void playerDie(){
         if (!mIsInvincible) {
             mPositionX = App.getScreenWidth() / 2;
@@ -213,6 +218,34 @@ public class Player extends GameObject implements Renderable,Updateable{
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;
         }
+    }
+
+    @Override
+    public boolean checkCollision(GameObject other, GameManager gameManager){
+        boolean retVal = false;
+        if (other instanceof Enemy){
+
+            if (playerCheckCollision(other.getHitbox())){
+                Log.d("Player checkCollision",""+gameManager.getTimeFreezeActivated());
+                if (gameManager.getTimeFreezeActivated()) {
+                    //((Enemy) other).enemyDie();
+                    // Enemy removed in gameEngine check collision
+                }
+                else{
+                    playerDie();
+                }
+                retVal = true;
+            }
+        }
+        else{
+            Log.d("Player","this is a game object and idk what it is");
+        }
+        return retVal;
+    }
+
+    @Override
+    public Circle getHitbox(){
+        return mHitbox;
     }
 
 }

@@ -1,6 +1,8 @@
 package com.gud.git.gitgud.Engine;
 
 
+import com.gud.git.gitgud.GameObjects.Enemy;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 /**
@@ -8,4 +10,7 @@ import com.gud.git.gitgud.R;
  */
 
 public abstract class GameObject implements Updateable, Renderable {
+
+    public abstract Circle getHitbox();
+    public abstract boolean checkCollision(GameObject other, GameManager gameManager);
 }

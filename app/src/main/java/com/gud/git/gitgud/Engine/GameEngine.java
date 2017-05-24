@@ -100,7 +100,7 @@ public class GameEngine {
                 mNumGameObjects++;
             }
         }
-        checkCollision();
+//        checkCollision();
     }
 
 

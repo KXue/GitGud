@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     }
 
     public void navigateBack(){
-        super.onBackPressed();;
+        super.onBackPressed();
     }
 
     @Override

@@ -26,6 +26,7 @@ public class UpdateThread extends Thread {
     }
     @Override
     public void run(){
+        long minTimeMillis = 2;
         long previousTimeMillis;
         long currentTimeMillis;
         long elapsedMillis;
@@ -46,8 +47,10 @@ public class UpdateThread extends Thread {
                 }
                 currentTimeMillis = System.currentTimeMillis();
             }
-            mGameEngine.onUpdate(elapsedMillis);
-            previousTimeMillis = currentTimeMillis;
+            if(currentTimeMillis > minTimeMillis){
+                mGameEngine.onUpdate(elapsedMillis);
+                previousTimeMillis = currentTimeMillis;
+            }
         }
     }
     public void pauseGame(){

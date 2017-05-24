@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import com.gud.git.gitgud.Engine.GameEngine;
+import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.R;
@@ -31,6 +32,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         mGameEngine.setInputController(new InputController(getView()));
         mGameEngine.startGame();
         mGameEngine.addGameObject(new Player());
+        mGameEngine.addGameObject(new Enemy(1920,1080,0));
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
     }
 

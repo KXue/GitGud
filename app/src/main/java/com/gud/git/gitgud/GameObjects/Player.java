@@ -139,28 +139,15 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
-        //Log.d("elasped",""+elapsedMillis);
-        if (elapsedMillis == 0){
-            zero++;
-        }
-
-        else if (elapsedMillis >= 1){
-            Log.d("elasped 0",""+zero);
-            zero = 0;
-        }
-
-        if (elapsedMillis >= 1) {
-            if (mIsInvincible) {
-                mInvincibleTime -= elapsedMillis;
-                Log.d("invincible time", "" + mInvincibleTime);
-                if (mInvincibleTime <= 0) {
-                    mIsInvincible = false;
-                }
+        if (mIsInvincible) {
+            mInvincibleTime -= elapsedMillis;
+            if (mInvincibleTime <= 0) {
+                mIsInvincible = false;
             }
-            if (gameEngine.mInputController.getTouched()) {
-                PointF newPoint = gameEngine.mInputController.getTouchPoint();
-                moveTo(newPoint.x, newPoint.y, elapsedMillis);
-            }
+        }
+        if (gameEngine.mInputController.getTouched()) {
+            PointF newPoint = gameEngine.mInputController.getTouchPoint();
+            moveTo(newPoint.x, newPoint.y, elapsedMillis);
         }
     }
 

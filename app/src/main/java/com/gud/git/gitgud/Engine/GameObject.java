@@ -9,8 +9,5 @@ import com.gud.git.gitgud.R;
  * Created by KevinXue on 5/15/2017.
  */
 
-public abstract class GameObject implements Updateable, Renderable {
-
-    public abstract Circle getHitbox();
-    public abstract boolean checkCollision(GameObject other, GameManager gameManager);
+public abstract class GameObject implements Updateable, Renderable, Collideable{
 }

@@ -3,6 +3,7 @@ package com.gud.git.gitgud.Managers;
 import android.util.Log;
 
 import com.gud.git.gitgud.Engine.GameEngine;
+import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Updateable;
 import com.gud.git.gitgud.GameObjects.Enemy;
 
@@ -20,12 +21,21 @@ when x time has passed, spawn the pattern
 
 public class GameManager implements Updateable{
 
-    long mTime;
-    int mPattern;
-    int mPlayerLives;
-    boolean mTimeFreezeActivated;
+    private static GameManager sGameManager;
 
-    public GameManager(){
+    public static GameManager getInstance(){
+        if(sGameManager == null){
+            sGameManager = new GameManager();
+        }
+        return sGameManager;
+    }
+
+    private long mTime;
+    private int mPattern;
+    private int mPlayerLives;
+    private boolean mTimeFreezeActivated;
+
+    private GameManager(){
         mTime = 0;
         mPattern = 0;
         mPlayerLives = 100;
@@ -96,7 +106,4 @@ public class GameManager implements Updateable{
     public void setTimeFreeze(boolean state){
         mTimeFreezeActivated = state;
     }
-
-
-
 }

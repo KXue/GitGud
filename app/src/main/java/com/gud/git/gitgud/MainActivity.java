@@ -3,6 +3,7 @@ package com.gud.git.gitgud;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.gud.git.gitgud.Fragments.BaseFragment;
@@ -15,6 +16,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        App.setDisplayMetrics(metrics);
         setContentView(R.layout.activity_main);
         if(savedInstanceState == null){
             getFragmentManager().beginTransaction().add(R.id.container, new MainMenuFragment(), TAG_FRAGMENT).commit();

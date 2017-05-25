@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 
 import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.Circle;
+import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
@@ -37,7 +38,6 @@ public class Player extends GameObject implements Renderable,Updateable{
     private int mMinX,mMinY;
     private int mMaxX,mMaxY;
     private int mWidth,mHeight;
-    private double mPixelFactor;
     private int mOffsetX,mOffsetY;
 
     private float mPositionX,mPositionY,mRadius;
@@ -144,10 +144,10 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
 //        temp timefreeze stuff
         if (mPositionX < 500){
-            gameEngine.getmGameManager().setTimeFreeze(true);
+            GameManager.getInstance().setTimeFreeze(true);
         }
         if (mPositionX > 1500){
-            gameEngine.getmGameManager().setTimeFreeze(false);
+            GameManager.getInstance().setTimeFreeze(false);
         }
         if (gameEngine.mInputController.getTouched()) {
             PointF newPoint = gameEngine.mInputController.getTouchPoint();
@@ -201,14 +201,6 @@ public class Player extends GameObject implements Renderable,Updateable{
         return mHitbox.intersect(other);
     }
 
-    public void collidedTrue(){
-        collided = true;
-    }
-
-    public void collidedFalse(){
-        collided = false;
-    }
-
 
     public void playerDie(){
         if (!mIsInvincible) {
@@ -221,14 +213,13 @@ public class Player extends GameObject implements Renderable,Updateable{
     }
 
     @Override
-    public boolean checkCollision(GameObject other, GameManager gameManager){
+    public boolean checkCollision(Collideable other){
         boolean retVal = false;
-        if (other instanceof Enemy){    //COLLIDED WITH BULLET
 
+        if (other instanceof Enemy){        //COLLIDED WITH ENEMY
             if (playerCheckCollision(other.getHitbox())){
+                if (GameManager.getInstance().getTimeFreezeActivated()) {
 
-                if (gameManager.getTimeFreezeActivated()) {
-                    // Enemy removed in gameEngine check collision
                 }
                 else{
                     playerDie();    //NOT IN TIMEFREEZE AND TOUCHED AN ENEMY, PLAYER DIES
@@ -248,10 +239,6 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
         return retVal;
     }
-
-   // public Player currentPosition(){
-     //   return this.
-    //}
 
     @Override
     public Circle getHitbox(){

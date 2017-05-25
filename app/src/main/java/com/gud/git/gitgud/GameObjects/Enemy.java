@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.Circle;
+import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Managers.GameManager;
@@ -23,23 +24,20 @@ public class Enemy extends GameObject {
 
     private int mWidth,mHeight;
 
-    //private double mPixelFactor;
     private int mOffsetX,mOffsetY;
 
-    float mPositionX,mPositionY,mRadius;
-    //double mSpeedFactor;
-    int mMoveType;
+    private float mPositionX,mPositionY,mRadius;
+    private int mMoveType;
 
-    float mMaxSpeed;
+    private float mMaxSpeed;
 
-    final long RELOAD_TIME = 1000;
-    long currentReload;
+    private final long RELOAD_TIME = 1000;
+    private long currentReload;
 
-    //final float MAX_SPEED_NORMAL = 1f;
-
-    Circle mHitbox;
+    private Circle mHitbox;
     private static Bitmap mEnemyBitmap;
     private static boolean bitmapCreated = false;
+    private boolean isDead = false;
 
     public Enemy(float startX, float startY, int moveType) {
 
@@ -61,10 +59,10 @@ public class Enemy extends GameObject {
 
         mPositionX = startX;
         mPositionY = startY;
-        mRadius = mWidth*0.5f;
+        mRadius = mWidth * 0.6f;
 
-        mOffsetX = mEnemyBitmap.getWidth()/2;
-        mOffsetY = mEnemyBitmap.getHeight()/2;
+        mOffsetX = mEnemyBitmap.getWidth() / 2;
+        mOffsetY = mEnemyBitmap.getHeight() / 2;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
@@ -73,7 +71,6 @@ public class Enemy extends GameObject {
 
         currentReload = RELOAD_TIME;
     }
-
     void moveTo(float x, float y, long elapsedMillis) {
         float dX = x - mPositionX;
         float dY = y - mPositionY;
@@ -130,21 +127,26 @@ public class Enemy extends GameObject {
     }
 
     @Override
+
     public void onUpdate(long elapsedMillis, GameEngine gameEngine) {
+        if (elapsedMillis >= 1) {
 
-        if (!gameEngine.getmGameManager().getTimeFreezeActivated()) {
-            currentReload -= elapsedMillis;
+            if (!GameManager.getInstance().getTimeFreezeActivated()) {
+                currentReload -= elapsedMillis;
+                moveTo(960, 540, elapsedMillis);
 
-            moveTo(960, 540, elapsedMillis);
+                if (currentReload <= 0) {
+                    Log.d("enemy fire", "player pos:" + gameEngine.getPlayer().getmPositionX() + " " + gameEngine.getPlayer().getmPositionY());
+                    gameEngine.addGameObject(new Bullet(mPositionX, mPositionY, gameEngine.getPlayer().getmPositionX(), gameEngine.getPlayer().getmPositionY()));
+                    currentReload = RELOAD_TIME;
+                }
 
-            if (currentReload <= 0) {
-                Log.d("enemy fire","player pos:"+gameEngine.getPlayer().getmPositionX()+" "+gameEngine.getPlayer().getmPositionY());
-                gameEngine.addGameObject(new Bullet(mPositionX, mPositionY, gameEngine.getPlayer().getmPositionX(), gameEngine.getPlayer().getmPositionY()));
-                currentReload = RELOAD_TIME;
+            }
+            if (isDead) {
+                gameEngine.removeGameObject(this);
             }
 
         }
-
     }
 
     @Override
@@ -153,12 +155,12 @@ public class Enemy extends GameObject {
     }
 
     @Override
-    public boolean checkCollision(GameObject other, GameManager gameManager) {
+    public boolean checkCollision(Collideable other) {
         return false;
     }
 
     public void enemyDie(){
-
+        isDead = true;
     }
 
 }

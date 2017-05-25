@@ -3,12 +3,15 @@ package com.gud.git.gitgud.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
+import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
@@ -43,7 +46,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.btn_play_pause){
-
         }
     }
 }

@@ -33,12 +33,11 @@ public class GameEngine {
     private List<GameObject> mGameObjects = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToAdd = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToRemove = new ArrayList<GameObject>();
+    private SpatialHash mCollisionSpatialHash = new SpatialHash(300);
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
     private int mNumGameObjects;
-
-    private GameManager mGameManager;
 
     public InputController mInputController;
 
@@ -48,7 +47,6 @@ public class GameEngine {
 
     public GameEngine(){
         mPaint = new Paint();
-        mGameManager = new GameManager();
     }
     public void startGame(){
         stopGame();
@@ -85,10 +83,10 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
-        mGameManager.onUpdate(elapsedMillis,this);
-
+        GameManager.getInstance().onUpdate(elapsedMillis, this);
         int numGameObjects = mGameObjects.size();
-        for (int i=0; i<numGameObjects; i++) {
+
+        for (int i = 0; i < numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);
         }
         synchronized (mGameObjects) {
@@ -127,35 +125,29 @@ public class GameEngine {
         }
     }
 
-    public void checkCollision(){
+    public void checkCollision() {
+        GameManager manager = GameManager.getInstance();
 
-        int numGameObjects = mGameObjects.size();
-        for (int i=0; i<numGameObjects-1; i++) {
-            for (int j=i+1; j<numGameObjects; j++) {
-                //Log.d("checkCollision","j="+j);
-                //Log.d("checkCollision","check "+i+" "+j);
-                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j),mGameManager)){
+        for (GameObject o : mGameObjects) {
+            mCollisionSpatialHash.insertObject(o);
+        }
 
-                    if (mGameManager.getTimeFreezeActivated()){
-                        if (mGameObjects.get(j) instanceof Enemy)
-                        removeGameObject(mGameObjects.get(j));
+        for (GameObject p : mCollisionSpatialHash.getPotentialColliders(mPlayer)) {
+            if (mPlayer.checkCollision(p)) {
+                if (manager.getTimeFreezeActivated()) {
+
+                    if (p instanceof Enemy) {
+                        removeGameObject(p);
                     }
-                    else{
-
-                    }
-                    //Log.d("checkCollision",mGameObjects.get(j).toString());
-                    //Log.d("checkCollision","remove gameobject index "+j);
-                    //Log.d("checkCollision","gameobjects remaining:"+numGameObjects);
+                } else {
 
                 }
-
             }
-        }
-    }
 
-    //temp thing for player
-    public GameManager getmGameManager(){
-        return mGameManager;
+        }
+
+        mCollisionSpatialHash.clear();
+
     }
 
     public void setPlayer(Player p){

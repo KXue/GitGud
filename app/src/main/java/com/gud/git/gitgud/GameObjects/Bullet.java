@@ -4,11 +4,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.Log;
 
 import com.gud.git.gitgud.App;
+import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
@@ -98,12 +100,16 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     @Override
     public void onDraw(Paint paint, Canvas canvas){
         canvas.drawBitmap(mBulletBitmap,mPositionX - mOffsetX,mPositionY - mOffsetY,paint);
+
+        paint.setColor(Color.argb(255, 0, 255,0));
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
     }
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
 
-        if (!gameEngine.getmGameManager().getTimeFreezeActivated()) {
+        if (!GameManager.getInstance().getTimeFreezeActivated()) {
             if (mPositionX < 0 || mPositionX > 1920 || mPositionY < 0 || mPositionY > 1080) {
 
                 gameEngine.removeGameObject(this);
@@ -124,9 +130,11 @@ public class Bullet extends GameObject implements Renderable,Updateable {
 
     }
 
-    public boolean checkCollision(GameObject other, GameManager gameManager){
+    @Override
+    public boolean checkCollision(Collideable other) {
         return false;
     }
+
     public Circle getHitbox(){
         return mHitbox;
     }

@@ -1,12 +1,12 @@
 package com.gud.git.gitgud.GameObjects;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.util.Log;
 
 import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.GameEngine;
@@ -16,9 +16,6 @@ import com.gud.git.gitgud.Engine.Updateable;
 import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 import com.gud.git.gitgud.Engine.Circle;
-import java.util.Random;
-
-import static android.R.attr.bitmap;
 
 
 /**
@@ -26,40 +23,64 @@ import static android.R.attr.bitmap;
  */
 
 public class Bullet extends GameObject implements Renderable,Updateable {
-    //bullet visual projection
-    private Bitmap mBulletBitmap;
-    //general speed for bullets moving across the screen
-    float mMaxSpeed,maxSpeedTimeFreeze;
+
     private int mWidth, mHeight;
+
+    private int mOffsetX,mOffsetY;
     float mPositionX, mPositionY, mRadius;
+
+    float mMaxSpeed;
+
+    //bullet visual projection
+    private static Bitmap mBulletBitmap;
+    private static boolean bitmapCreated = false;
+
     Circle mHitbox;
-    PointF mVelocity;
+    PointF mDirection;
+
 
 
     public Bullet(float startX, float startY, float endX, float endY){
-        Resources res = App.getContext().getResources();
-        mBulletBitmap = BitmapFactory.decodeResource(res,R.drawable.bullet);
-        mHitbox = new Circle(mPositionX,mPositionY,10);
-        mWidth = mBulletBitmap.getWidth();
-        mHeight = mBulletBitmap.getHeight();
+
+        Log.d("bullet cons","start:"+startX+" "+startY);
+        Log.d("bullet cons","end:"+endX+" "+endY);
+        mWidth = 25;
+        mHeight = 25;
+
+        if (!bitmapCreated) {
+            bitmapCreated = true;
+
+            Resources res = App.getContext().getResources();
+            mBulletBitmap = BitmapFactory.decodeResource(res,R.drawable.bullet);
+            mBulletBitmap = Bitmap.createScaledBitmap(mBulletBitmap, mWidth, mHeight, true);
+        }
+
         mPositionX = startX;
         mPositionY = startY;
-        mWidth = 25;
-        mHeight = 50;
-        mRadius = 5;
-        mBulletBitmap = Bitmap.createScaledBitmap(mBulletBitmap,mWidth,mHeight,true);
-        mMaxSpeed = 5f;
+        mRadius = mWidth * 0.5f;
+
+
+        //mWidth = mBulletBitmap.getWidth();
+        //mHeight = mBulletBitmap.getHeight();
+
+
+        mOffsetX = mBulletBitmap.getWidth()/2;
+        mOffsetY = mBulletBitmap.getHeight()/2;
+
+        mMaxSpeed = 0.5f;
+
         mHitbox = new Circle(mPositionX,mPositionY,10);
+
         float distanceX = endX - startX;
         float distanceY = endY - startY;
         float magnitude = (float)Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        mVelocity = new PointF();
+        mDirection = new PointF();
         if(magnitude == 0) {
-            mVelocity.x = 0;
-            mVelocity.y = 0;
+            mDirection.x = 0;
+            mDirection.y = 0;
         }else{
-            mVelocity.x = distanceX / magnitude;
-            mVelocity.y = distanceY / magnitude;
+            mDirection.x = distanceX / magnitude;
+            mDirection.y = distanceY / magnitude;
         }
 
 
@@ -76,34 +97,30 @@ public class Bullet extends GameObject implements Renderable,Updateable {
 
     @Override
     public void onDraw(Paint paint, Canvas canvas){
-        canvas.drawBitmap(mBulletBitmap,mPositionX,mPositionY,paint);
+        canvas.drawBitmap(mBulletBitmap,mPositionX - mOffsetX,mPositionY - mOffsetY,paint);
     }
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
-     //  mMaxSpeed = (100f/1000f) * elapsedMillis;
 
-        if (mPositionX <= 0){
+        if (!gameEngine.getmGameManager().getTimeFreezeActivated()) {
+            if (mPositionX < 0 || mPositionX > 1920 || mPositionY < 0 || mPositionY > 1080) {
 
                 gameEngine.removeGameObject(this);
+            }
 
-           // maxSpeedNormal = (5f / 1000f) * elapsedMillis;
+
+
+            float velocityx = mMaxSpeed * mDirection.x * elapsedMillis;
+            float velocityy = mMaxSpeed * mDirection.y * elapsedMillis;
+
+            //Log.d("bullet update",""+velocityx+" "+velocityy);
+
+            mPositionX += mMaxSpeed * mDirection.x * elapsedMillis;
+            mPositionY += mMaxSpeed * mDirection.y * elapsedMillis;
+
+            mHitbox.moveCircle(mPositionX, mPositionY);
         }
-
-
-
-        else if (mPositionX >= 1920){
-            gameEngine.removeGameObject(this);
-
-
-          //  maxSpeedNormal = (-5f / 1000f) * elapsedMillis;
-        }
-
-
-        mPositionX += mMaxSpeed * mVelocity.x;
-        mPositionY += mMaxSpeed * mVelocity.y;
-
-        mHitbox.moveCircle(mPositionX,mPositionY);
 
     }
 

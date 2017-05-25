@@ -40,7 +40,7 @@ public class Player extends GameObject implements Renderable,Updateable{
     private double mPixelFactor;
     private int mOffsetX,mOffsetY;
 
-    float mPositionX,mPositionY,mRadius;
+    private float mPositionX,mPositionY,mRadius;
 
     float mSpeedFactor;
 
@@ -71,8 +71,8 @@ public class Player extends GameObject implements Renderable,Updateable{
         mWidth = mPlayerBitmap.getWidth();
         mHeight = mPlayerBitmap.getHeight();
 
-        mWidth = 150;
-        mHeight = 150;
+        mWidth = 75;
+        mHeight = 75;
 
         mPlayerBitmap = Bitmap.createScaledBitmap(mPlayerBitmap,mWidth,mHeight,true);
 
@@ -223,22 +223,28 @@ public class Player extends GameObject implements Renderable,Updateable{
     @Override
     public boolean checkCollision(GameObject other, GameManager gameManager){
         boolean retVal = false;
-        if (other instanceof Enemy){
+        if (other instanceof Enemy){    //COLLIDED WITH BULLET
 
             if (playerCheckCollision(other.getHitbox())){
-                Log.d("Player checkCollision",""+gameManager.getTimeFreezeActivated());
+
                 if (gameManager.getTimeFreezeActivated()) {
-                    //((Enemy) other).enemyDie();
                     // Enemy removed in gameEngine check collision
                 }
                 else{
-                    playerDie();
+                    playerDie();    //NOT IN TIMEFREEZE AND TOUCHED AN ENEMY, PLAYER DIES
                 }
                 retVal = true;
             }
         }
+        else if (other instanceof Bullet){      //COLLIDED WITH BULLET
+            if (playerCheckCollision(other.getHitbox())) {      //PLAYER ALWAYS DIE WHEN COLLIDING WITH BULLET  (except when invincible which is checked in playerdie function)
+
+                playerDie();
+                retVal = true;
+            }
+        }
         else{
-            Log.d("Player","this is a game object and idk what it is");
+            //Log.d("Player","this is a game object and idk what it is");
         }
         return retVal;
     }
@@ -250,6 +256,13 @@ public class Player extends GameObject implements Renderable,Updateable{
     @Override
     public Circle getHitbox(){
         return mHitbox;
+    }
+
+    public float getmPositionX(){
+        return mPositionX;
+    }
+    public float getmPositionY(){
+        return mPositionY;
     }
 
 }

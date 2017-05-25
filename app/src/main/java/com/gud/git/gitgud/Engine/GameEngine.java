@@ -126,7 +126,7 @@ public class GameEngine {
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }
-    public Player getMplayer () {return mplayer;}
+
     public void checkCollision(){
 
         int numGameObjects = mGameObjects.size();
@@ -137,6 +137,7 @@ public class GameEngine {
                 if (mGameObjects.get(i).checkCollision(mGameObjects.get(j),mGameManager)){
 
                     if (mGameManager.getTimeFreezeActivated()){
+                        if (mGameObjects.get(j) instanceof Enemy)
                         removeGameObject(mGameObjects.get(j));
                     }
                     else{

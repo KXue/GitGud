@@ -67,6 +67,23 @@ public class GameEngine {
             mDrawThread.stopGame();
         }
     }
+    public void pauseGame() {
+        if (mUpdateThread != null) {
+            mUpdateThread.pauseGame();
+        }
+        if (mDrawThread != null) {
+            mDrawThread.pauseGame();
+        }
+    }
+
+    public void resumeGame() {
+        if (mUpdateThread != null) {
+            mUpdateThread.resumeGame();
+        }
+        if (mDrawThread != null) {
+            mDrawThread.resumeGame();
+        }
+    }
     //must be called to
     public void setDrawSurfaceHolder(SurfaceHolder surfaceHolder){
         mDrawSurfaceHolder = surfaceHolder;
@@ -165,5 +182,11 @@ public class GameEngine {
 
     public Player getPlayer(){
         return mPlayer;
+    }
+    public boolean isRunning() {
+        return mUpdateThread != null && mUpdateThread.isGameRunning();
+    }
+    public boolean isPaused() {
+        return mUpdateThread != null && mUpdateThread.isGamePaused();
     }
 }

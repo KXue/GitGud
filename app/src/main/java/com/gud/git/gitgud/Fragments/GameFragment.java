@@ -2,6 +2,7 @@ package com.gud.git.gitgud.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -16,6 +17,7 @@ import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
+import com.gud.git.gitgud.MainActivity;
 import com.gud.git.gitgud.R;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener{
@@ -31,21 +33,73 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
     }
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+        prepareAndStartGame();
+    }
+
+    private void prepareAndStartGame() {
         mGameEngine = new GameEngine();
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
         mGameEngine.setInputController(new InputController(getView()));
-        mGameEngine.startGame();
         mPlayer = new Player();
-        mGameEngine.addGameObject(mPlayer);
+        mGameEngine.addGameObject(new Player());
         mGameEngine.setPlayer(mPlayer);
         mGameEngine.addGameObject(new Enemy(1920,1080,0));
-        //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
-    }
+        mGameEngine.startGame();
 
+    }
 
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.btn_play_pause){
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mGameEngine.isRunning()){
+            pauseGameAndShowPauseDialog();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mGameEngine.stopGame();
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (mGameEngine.isRunning() && !mGameEngine.isPaused()){
+            pauseGameAndShowPauseDialog();
+            return true;
+        }
+        return super.onBackPressed();
+    }
+
+    private void pauseGameAndShowPauseDialog() {
+        if (mGameEngine.isPaused()) {
+            return;
+        }
+        mGameEngine.pauseGame();
+//        PauseDialog dialog = new PauseDialog(getYassActivity());
+//        dialog.setListener(this);
+//        showDialog(dialog);
+    }
+
+    public void resumeGame() {
+        mGameEngine.resumeGame();
+    }
+
+    public void exitGame() {
+        mGameEngine.stopGame();
+        ((MainActivity)getActivity()).navigateBack();
+    }
+
+    public void startNewGame() {
+        // Exit the current game
+        mGameEngine.stopGame();
+        // Start a new one
+        prepareAndStartGame();
     }
 }

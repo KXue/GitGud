@@ -76,8 +76,6 @@ public class GameManager implements Updateable{
 
                       //  Log.d("GameManager", enemiesCreated + " enemies created");
                     } else if (mPattern == 1) {
-                        float width = 1600;
-                        float height = 1600;
 
                         int enemies = 8;
 

@@ -100,18 +100,10 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
-        GameManager.getInstance().onUpdate(elapsedMillis,this);
+        GameManager.getInstance().onUpdate(elapsedMillis, this);
         int numGameObjects = mGameObjects.size();
-        for(GameObject o : mGameObjects){
-            mCollisionSpatialHash.insertObject(o);
-        }
-        for(GameObject o : mGameObjects){
-            for(GameObject p : mCollisionSpatialHash.getPotentialColliders(o)){
-                o.checkCollision(p);
-            }
-        }
-        mCollisionSpatialHash.clear();
-        for (int i=0; i<numGameObjects; i++) {
+
+        for (int i = 0; i < numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);
         }
         synchronized (mGameObjects) {
@@ -125,7 +117,7 @@ public class GameEngine {
                 mNumGameObjects++;
             }
         }
-//        checkCollision();
+        checkCollision();
     }
 
 
@@ -149,31 +141,30 @@ public class GameEngine {
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }
-    public Player getMplayer () {return mplayer;}
-    public void checkCollision(){
 
-        int numGameObjects = mGameObjects.size();
-        for (int i=0; i<numGameObjects-1; i++) {
-            for (int j=i+1; j<numGameObjects; j++) {
-                //Log.d("checkCollision","j="+j);
-                //Log.d("checkCollision","check "+i+" "+j);
-                GameManager manager = GameManager.getInstance();
-                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j))){
+    public void checkCollision() {
+        GameManager manager = GameManager.getInstance();
 
-                    if (manager.getTimeFreezeActivated()){
-                        removeGameObject(mGameObjects.get(j));
+        for (GameObject o : mGameObjects) {
+            mCollisionSpatialHash.insertObject(o);
+        }
+
+        for (GameObject p : mCollisionSpatialHash.getPotentialColliders(mPlayer)) {
+            if (mPlayer.checkCollision(p)) {
+                if (manager.getTimeFreezeActivated()) {
+
+                    if (p instanceof Enemy) {
+                        removeGameObject(p);
                     }
-                    else{
-
-                    }
-                    //Log.d("checkCollision",mGameObjects.get(j).toString());
-                    //Log.d("checkCollision","remove gameobject index "+j);
-                    //Log.d("checkCollision","gameobjects remaining:"+numGameObjects);
+                } else {
 
                 }
-
             }
+
         }
+
+        mCollisionSpatialHash.clear();
+
     }
 
     public void setPlayer(Player p){

@@ -34,11 +34,14 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         mGameEngine = new GameEngine();
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
         mGameEngine.setInputController(new InputController(getView()));
-        mGameEngine.startGame();
+
         mPlayer = new Player();
         mGameEngine.addGameObject(mPlayer);
         mGameEngine.setPlayer(mPlayer);
-        mGameEngine.addGameObject(new Enemy(1920,1080,0));
+
+        mGameEngine.addGameObject(new Enemy(1920,1080,0));  //remove this on  release
+
+        mGameEngine.startGame();
         //view.findViewById(R.id.btn_play_pause).setOnClickListener(this);
     }
 

@@ -25,7 +25,7 @@ import java.util.List;
 
 public class GameEngine {
 
-
+    private Player mplayer;
     private Paint mPaint;
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
@@ -124,7 +124,7 @@ public class GameEngine {
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }
-
+    public Player getMplayer () {return mplayer;}
     public void checkCollision(){
 
         int numGameObjects = mGameObjects.size();

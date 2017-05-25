@@ -243,6 +243,10 @@ public class Player extends GameObject implements Renderable,Updateable{
         return retVal;
     }
 
+   // public Player currentPosition(){
+     //   return this.
+    //}
+
     @Override
     public Circle getHitbox(){
         return mHitbox;

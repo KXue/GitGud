@@ -38,7 +38,7 @@ public class GameManager implements Updateable{
             if (!getTimeFreezeActivated()) {
                 mTime += elapsedMillis;
 
-                if (mTime >= 800) {
+                if (mTime >= 2000) {
                     mTime = 0;
                     int centreX = 960;
                     int centreY = 540;
@@ -50,8 +50,8 @@ public class GameManager implements Updateable{
 
                         float radius = 1500;
 
-                        int numEnemies = 120; //could randomize
-
+                        int numEnemies = 0; //could randomize
+                        if (numEnemies > 0) {
                         float angleToAdd = (float) (360 / numEnemies * Math.PI / 180);
                         float angle = angleToAdd;
                         int enemiesCreated = 0;
@@ -62,7 +62,8 @@ public class GameManager implements Updateable{
                             angle += angleToAdd;
                             enemiesCreated++;
                         }
-                        Log.d("GameManager", enemiesCreated + " enemies created");
+                    }
+                      //  Log.d("GameManager", enemiesCreated + " enemies created");
                     } else if (mPattern == 1) {
                         float width = 1600;
                         float height = 1600;

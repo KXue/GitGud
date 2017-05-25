@@ -15,6 +15,8 @@ import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
+import static com.gud.git.gitgud.R.drawable.bullet;
+
 /**
  * Created by Nue on 5/17/2017.
  */
@@ -138,6 +140,9 @@ public class Enemy extends GameObject {
             */
             if (!gameEngine.getmGameManager().getTimeFreezeActivated()){
                 moveTo(960,540,elapsedMillis);
+
+                gameEngine.addGameObject(new  Bullet(mPositionX, mPositionY, 50, 50));
+
             }
 
         }

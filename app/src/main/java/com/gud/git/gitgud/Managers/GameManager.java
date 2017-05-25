@@ -38,7 +38,7 @@ public class GameManager implements Updateable{
             if (!getTimeFreezeActivated()) {
                 mTime += elapsedMillis;
 
-                if (mTime >= 800) {
+                if (mTime >= 2000) {
                     mTime = 0;
                     int centreX = 960;
                     int centreY = 540;
@@ -50,7 +50,7 @@ public class GameManager implements Updateable{
 
                         float radius = 1500;
 
-                        int numEnemies = 120; //could randomize
+                        int numEnemies = 6; //could randomize
 
                         float angleToAdd = (float) (360 / numEnemies * Math.PI / 180);
                         float angle = angleToAdd;

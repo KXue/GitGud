@@ -42,6 +42,8 @@ public class GameEngine {
 
     public InputController mInputController;
 
+    public Player mPlayer;
+
     private int screenWidth, screenHeight;
 
     public GameEngine(){
@@ -153,5 +155,13 @@ public class GameEngine {
     //temp thing for player
     public GameManager getmGameManager(){
         return mGameManager;
+    }
+
+    public void setPlayer(Player p){
+        mPlayer = p;
+    }
+
+    public Player getPlayer(){
+        return mPlayer;
     }
 }

@@ -50,8 +50,9 @@ public class GameManager implements Updateable{
 
                         float radius = 1500;
 
-                        int numEnemies = 0; //could randomize
-                        if (numEnemies > 0) {
+                        int numEnemies = 6; //could randomize
+
+
                         float angleToAdd = (float) (360 / numEnemies * Math.PI / 180);
                         float angle = angleToAdd;
                         int enemiesCreated = 0;
@@ -62,7 +63,7 @@ public class GameManager implements Updateable{
                             angle += angleToAdd;
                             enemiesCreated++;
                         }
-                    }
+
                       //  Log.d("GameManager", enemiesCreated + " enemies created");
                     } else if (mPattern == 1) {
                         float width = 1600;

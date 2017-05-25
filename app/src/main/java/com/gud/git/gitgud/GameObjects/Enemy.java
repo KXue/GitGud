@@ -16,6 +16,8 @@ import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
+import static com.gud.git.gitgud.R.drawable.bullet;
+
 /**
  * Created by Nue on 5/17/2017.
  */
@@ -24,22 +26,17 @@ public class Enemy extends GameObject {
 
     private int mWidth,mHeight;
 
-    private double mPixelFactor;
     private int mOffsetX,mOffsetY;
 
     float mPositionX,mPositionY,mRadius;
-    double mSpeedFactor;
     int mMoveType;
 
-    float mMaxSpeedNormal,mMaxSpeedTimeFreeze;
-
-    final float MAX_SPEED_NORMAL = 1f;
+    float mMaxSpeedNormal;
 
     Circle mHitbox;
     public static Bitmap mEnemyBitmap;
     static boolean bitmapCreated = false;
     private boolean isDead = false;
-    private boolean mIsHighlighted = false;
 
 
     public Enemy(float startX, float startY, int moveType) {
@@ -63,19 +60,16 @@ public class Enemy extends GameObject {
 
         mPositionX = startX;
         mPositionY = startY;
-        mRadius = mWidth*0.5f;
+        mRadius = mWidth * 0.5f;
 
-        mOffsetX = mEnemyBitmap.getWidth()/2;
-        mOffsetY = mEnemyBitmap.getHeight()/2;
+        mOffsetX = mEnemyBitmap.getWidth() / 2;
+        mOffsetY = mEnemyBitmap.getHeight() / 2;
 
         mHitbox = new Circle(mPositionX,mPositionY,mRadius);
 
         mMaxSpeedNormal = 0.2f;
         mMoveType = moveType;
 
-    }
-    public void highlight(boolean value){
-        mIsHighlighted = value;
     }
     void moveTo(float x, float y, long elapsedMillis) {
         float dX = x - mPositionX;
@@ -128,9 +122,6 @@ public class Enemy extends GameObject {
         canvas.drawBitmap(mEnemyBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
 
         paint.setColor(Color.argb(255, 0, 255,0));
-        if(mIsHighlighted){
-            paint.setColor(Color.argb(255, 0, 0,0));
-        }
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
     }
@@ -147,6 +138,9 @@ public class Enemy extends GameObject {
             */
             if (!GameManager.getInstance().getTimeFreezeActivated()){
                 moveTo(960,540,elapsedMillis);
+
+//                gameEngine.addGameObject(new  Bullet(mPositionX, mPositionY, 50, 50));
+
             }
 
         }

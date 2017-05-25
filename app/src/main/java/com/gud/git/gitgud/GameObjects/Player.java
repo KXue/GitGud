@@ -38,7 +38,6 @@ public class Player extends GameObject implements Renderable,Updateable{
     private int mMinX,mMinY;
     private int mMaxX,mMaxY;
     private int mWidth,mHeight;
-    private double mPixelFactor;
     private int mOffsetX,mOffsetY;
 
     float mPositionX,mPositionY,mRadius;
@@ -202,14 +201,6 @@ public class Player extends GameObject implements Renderable,Updateable{
         return mHitbox.intersect(other);
     }
 
-    public void collidedTrue(){
-        collided = true;
-    }
-
-    public void collidedFalse(){
-        collided = false;
-    }
-
 
     public void playerDie(){
         if (!mIsInvincible) {
@@ -225,14 +216,12 @@ public class Player extends GameObject implements Renderable,Updateable{
     public boolean checkCollision(Collideable other){
         boolean retVal = false;
         if (other instanceof Enemy){
-            ((Enemy) other).highlight(true);
             if (playerCheckCollision(other.getHitbox())){
                 if (GameManager.getInstance().getTimeFreezeActivated()) {
                 }
                 else{
                     playerDie();
                 }
-                //((Enemy) other).enemyDie();
                 retVal = true;
             }
         }

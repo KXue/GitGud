@@ -47,7 +47,7 @@ public class UpdateThread extends Thread {
                 }
                 currentTimeMillis = System.currentTimeMillis();
             }
-            if(currentTimeMillis > minTimeMillis){
+            if(elapsedMillis > minTimeMillis){
                 mGameEngine.onUpdate(elapsedMillis);
                 previousTimeMillis = currentTimeMillis;
             }

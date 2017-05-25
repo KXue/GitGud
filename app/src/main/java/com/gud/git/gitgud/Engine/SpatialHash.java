@@ -80,10 +80,6 @@ public class SpatialHash {
             }
         }
         retBucket.remove(obj);
-        if(obj instanceof Player){
-            Log.d("Hash", "Buckets: " + buckets);
-            Log.d("Hash", "Size: " + retBucket.size());
-        }
         return retBucket;
     }
     private Point hash(Point position){

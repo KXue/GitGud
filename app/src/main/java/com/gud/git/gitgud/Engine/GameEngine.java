@@ -25,7 +25,7 @@ import java.util.List;
 
 public class GameEngine {
 
-
+    private Player mplayer;
     private Paint mPaint;
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
@@ -40,6 +40,10 @@ public class GameEngine {
     private int mNumGameObjects;
 
     public InputController mInputController;
+
+    public Player mPlayer;
+
+    private int screenWidth, screenHeight;
 
     public GameEngine(){
         mPaint = new Paint();
@@ -82,9 +86,6 @@ public class GameEngine {
         GameManager.getInstance().onUpdate(elapsedMillis,this);
         int numGameObjects = mGameObjects.size();
         for(GameObject o : mGameObjects){
-            if(o instanceof Enemy){
-                ((Enemy)o).highlight(false);
-            }
             mCollisionSpatialHash.insertObject(o);
         }
         for(GameObject o : mGameObjects){
@@ -131,7 +132,7 @@ public class GameEngine {
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
     }
-
+    public Player getMplayer () {return mplayer;}
     public void checkCollision(){
 
         int numGameObjects = mGameObjects.size();
@@ -156,5 +157,13 @@ public class GameEngine {
 
             }
         }
+    }
+
+    public void setPlayer(Player p){
+        mPlayer = p;
+    }
+
+    public Player getPlayer(){
+        return mPlayer;
     }
 }

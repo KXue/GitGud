@@ -1,7 +1,6 @@
 package com.gud.git.gitgud.Input;
 
 import android.graphics.PointF;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -41,7 +40,6 @@ public class InputController{
                     mMainFingerID = event.getPointerId(0);
                     break;
                 case MotionEvent.ACTION_UP:
-                    Log.d("InputUp", event.toString());
                     mTouched = false;
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -54,7 +52,6 @@ public class InputController{
                     }
                     break;
                 case MotionEvent.ACTION_POINTER_UP:
-                    Log.d("InputPUp", event.toString());
                     if(event.getPointerId(event.getActionIndex()) == mMainFingerID){
                         for(int i = 0; i < event.getPointerCount(); i++){
                             if(event.getPointerId(i) != mMainFingerID){

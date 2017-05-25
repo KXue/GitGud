@@ -10,7 +10,6 @@ public class Circle{
     float mRadius;
 
     public Circle(float positionX,float positionY, float radius) {
-
         mPositionX = positionX;
         mPositionY = positionY;
         mRadius = radius;
@@ -36,7 +35,18 @@ public class Circle{
         mPositionX = x;
         mPositionY = y;
     }
-
+    public int getMinX(){
+        return (int)(mPositionX - mRadius);
+    }
+    public int getMinY(){
+        return (int)(mPositionY - mRadius);
+    }
+    public int getMaxX(){
+        return (int)(mPositionX + mRadius);
+    }
+    public int getMaxY(){
+        return (int)(mPositionY + mRadius);
+    }
     public float getX(){
         return mPositionX;
     }

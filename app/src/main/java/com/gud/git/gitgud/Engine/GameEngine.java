@@ -33,20 +33,16 @@ public class GameEngine {
     private List<GameObject> mGameObjects = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToAdd = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToRemove = new ArrayList<GameObject>();
+    private SpatialHash mCollisionSpatialHash = new SpatialHash(300);
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
     private int mNumGameObjects;
 
-    private GameManager mGameManager;
-
     public InputController mInputController;
-
-    private int screenWidth, screenHeight;
 
     public GameEngine(){
         mPaint = new Paint();
-        mGameManager = new GameManager();
     }
     public void startGame(){
         stopGame();
@@ -83,9 +79,20 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
-        mGameManager.onUpdate(elapsedMillis,this);
-
+        GameManager.getInstance().onUpdate(elapsedMillis,this);
         int numGameObjects = mGameObjects.size();
+        for(GameObject o : mGameObjects){
+            if(o instanceof Enemy){
+                ((Enemy)o).highlight(false);
+            }
+            mCollisionSpatialHash.insertObject(o);
+        }
+        for(GameObject o : mGameObjects){
+            for(GameObject p : mCollisionSpatialHash.getPotentialColliders(o)){
+                o.checkCollision(p);
+            }
+        }
+        mCollisionSpatialHash.clear();
         for (int i=0; i<numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);
         }
@@ -132,9 +139,10 @@ public class GameEngine {
             for (int j=i+1; j<numGameObjects; j++) {
                 //Log.d("checkCollision","j="+j);
                 //Log.d("checkCollision","check "+i+" "+j);
-                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j),mGameManager)){
+                GameManager manager = GameManager.getInstance();
+                if (mGameObjects.get(i).checkCollision(mGameObjects.get(j))){
 
-                    if (mGameManager.getTimeFreezeActivated()){
+                    if (manager.getTimeFreezeActivated()){
                         removeGameObject(mGameObjects.get(j));
                     }
                     else{
@@ -148,10 +156,5 @@ public class GameEngine {
 
             }
         }
-    }
-
-    //temp thing for player
-    public GameManager getmGameManager(){
-        return mGameManager;
     }
 }

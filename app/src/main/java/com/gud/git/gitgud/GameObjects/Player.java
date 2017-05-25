@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 
 import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.Circle;
+import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
@@ -144,10 +145,10 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
 //        temp timefreeze stuff
         if (mPositionX < 500){
-            gameEngine.getmGameManager().setTimeFreeze(true);
+            GameManager.getInstance().setTimeFreeze(true);
         }
         if (mPositionX > 1500){
-            gameEngine.getmGameManager().setTimeFreeze(false);
+            GameManager.getInstance().setTimeFreeze(false);
         }
         if (gameEngine.mInputController.getTouched()) {
             PointF newPoint = gameEngine.mInputController.getTouchPoint();
@@ -221,19 +222,17 @@ public class Player extends GameObject implements Renderable,Updateable{
     }
 
     @Override
-    public boolean checkCollision(GameObject other, GameManager gameManager){
+    public boolean checkCollision(Collideable other){
         boolean retVal = false;
         if (other instanceof Enemy){
-
+            ((Enemy) other).highlight(true);
             if (playerCheckCollision(other.getHitbox())){
-                Log.d("Player checkCollision",""+gameManager.getTimeFreezeActivated());
-                if (gameManager.getTimeFreezeActivated()) {
-                    //((Enemy) other).enemyDie();
-                    // Enemy removed in gameEngine check collision
+                if (GameManager.getInstance().getTimeFreezeActivated()) {
                 }
                 else{
                     playerDie();
                 }
+                //((Enemy) other).enemyDie();
                 retVal = true;
             }
         }

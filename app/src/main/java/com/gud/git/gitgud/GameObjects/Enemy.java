@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.gud.git.gitgud.App;
 import com.gud.git.gitgud.Engine.Circle;
+import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Managers.GameManager;
@@ -37,6 +38,9 @@ public class Enemy extends GameObject {
     Circle mHitbox;
     public static Bitmap mEnemyBitmap;
     static boolean bitmapCreated = false;
+    private boolean isDead = false;
+    private boolean mIsHighlighted = false;
+
 
     public Enemy(float startX, float startY, int moveType) {
 
@@ -70,7 +74,9 @@ public class Enemy extends GameObject {
         mMoveType = moveType;
 
     }
-
+    public void highlight(boolean value){
+        mIsHighlighted = value;
+    }
     void moveTo(float x, float y, long elapsedMillis) {
         float dX = x - mPositionX;
         float dY = y - mPositionY;
@@ -122,6 +128,9 @@ public class Enemy extends GameObject {
         canvas.drawBitmap(mEnemyBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
 
         paint.setColor(Color.argb(255, 0, 255,0));
+        if(mIsHighlighted){
+            paint.setColor(Color.argb(255, 0, 0,0));
+        }
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
     }
@@ -136,10 +145,13 @@ public class Enemy extends GameObject {
                 maxSpeedNormal = -MAX_SPEED_NORMAL * elapsedMillis;
             }
             */
-            if (!gameEngine.getmGameManager().getTimeFreezeActivated()){
+            if (!GameManager.getInstance().getTimeFreezeActivated()){
                 moveTo(960,540,elapsedMillis);
             }
 
+        }
+        if(isDead){
+            gameEngine.removeGameObject(this);
         }
 
     }
@@ -150,12 +162,12 @@ public class Enemy extends GameObject {
     }
 
     @Override
-    public boolean checkCollision(GameObject other, GameManager gameManager) {
+    public boolean checkCollision(Collideable other) {
         return false;
     }
 
     public void enemyDie(){
-
+        isDead = true;
     }
 
 }

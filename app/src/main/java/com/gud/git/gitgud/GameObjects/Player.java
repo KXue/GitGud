@@ -143,10 +143,10 @@ public class Player extends GameObject implements Renderable,Updateable{
             }
         }
 //        temp timefreeze stuff
-        if (mPositionX < 500){
+        if (mPositionX < 200){
             GameManager.getInstance().setTimeFreeze(true);
         }
-        if (mPositionX > 1500){
+        if (mPositionX > 1700){
             GameManager.getInstance().setTimeFreeze(false);
         }
         if (gameEngine.mInputController.getTouched()) {
@@ -204,11 +204,13 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     public void playerDie(){
         if (!mIsInvincible) {
+            GameManager.getInstance().playerLoseLife();
             mPositionX = App.getScreenWidth() / 2;
             mPositionY = App.getScreenHeight() / 2;
             mHitbox.moveCircle(mPositionX,mPositionY);
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;
+
         }
     }
 

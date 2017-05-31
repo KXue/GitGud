@@ -83,24 +83,29 @@ public class GameEngine {
     }
 
     public void onUpdate(long elapsedMillis) {
-        GameManager.getInstance().onUpdate(elapsedMillis, this);
-        int numGameObjects = mGameObjects.size();
+        if (GameManager.getInstance().isRunning()) {
+            GameManager.getInstance().onUpdate(elapsedMillis, this);
+            int numGameObjects = mGameObjects.size();
 
-        for (int i = 0; i < numGameObjects; i++) {
-            mGameObjects.get(i).onUpdate(elapsedMillis, this);
-        }
-        synchronized (mGameObjects) {
-            while (!mObjectsToRemove.isEmpty()) {
-                mGameObjects.remove(mObjectsToRemove.remove(0));
-                mNumGameObjects--;
-                //Log.d("gameEngine","GameObject removed");
+            for (int i = 0; i < numGameObjects; i++) {
+                mGameObjects.get(i).onUpdate(elapsedMillis, this);
             }
-            while (!mObjectsToAdd.isEmpty()) {
-                mGameObjects.add(mObjectsToAdd.remove(0));
-                mNumGameObjects++;
+            synchronized (mGameObjects) {
+                while (!mObjectsToRemove.isEmpty()) {
+                    mGameObjects.remove(mObjectsToRemove.remove(0));
+                    mNumGameObjects--;
+                    //Log.d("gameEngine","GameObject removed");
+                }
+                while (!mObjectsToAdd.isEmpty()) {
+                    mGameObjects.add(mObjectsToAdd.remove(0));
+                    mNumGameObjects++;
+                }
             }
+            checkCollision();
         }
-        checkCollision();
+        else{
+            GameManager.getInstance().onUpdate(elapsedMillis, this);
+        }
     }
 
 
@@ -121,8 +126,12 @@ public class GameEngine {
 
             mGameObjects.get(0).onDraw(mPaint, mCanvas);
 
+            GameManager.getInstance().onDraw(mPaint, mCanvas);
+
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
+
+
     }
 
     public void checkCollision() {

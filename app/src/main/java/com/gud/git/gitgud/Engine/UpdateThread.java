@@ -9,6 +9,7 @@ public class UpdateThread extends Thread {
     private GameEngine mGameEngine;
     private boolean mPauseGame;
     private Object mLock = new Object();
+    private final int FPS = 60;
 
     public UpdateThread(GameEngine gameEngine) {
         mGameEngine = gameEngine;
@@ -30,6 +31,7 @@ public class UpdateThread extends Thread {
         long previousTimeMillis;
         long currentTimeMillis;
         long elapsedMillis;
+        int timeBetweenFrames = 1000/FPS;
         previousTimeMillis = System.currentTimeMillis();
 
         while(mGameIsRunning){
@@ -49,7 +51,14 @@ public class UpdateThread extends Thread {
             }
             if(elapsedMillis > minTimeMillis){
                 mGameEngine.onUpdate(elapsedMillis);
+
                 previousTimeMillis = currentTimeMillis;
+            }
+            else{
+                try {
+                    Thread.sleep(timeBetweenFrames-elapsedMillis);
+                } catch (InterruptedException e) {
+                }
             }
         }
     }

@@ -14,6 +14,8 @@ import com.gud.git.gitgud.Fragments.GameFragment;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.HomeButton;
 
+import java.util.Random;
+
 /**
  * Created by Nue on 5/19/2017.
  */
@@ -66,12 +68,14 @@ public class GameManager implements Updateable,Renderable{
 
                         //Log.d("gamemanager",""+centreX+" "+centreY);
                         Log.d("gamemanager", "pattern " + mPattern);
+                        Random r = new Random();
+                        mPattern = r.nextInt(2);
 
                         if (mPattern == 0) {
 
                             float radius = 1000;
 
-                            int numEnemies = 10; //could randomize
+                            int numEnemies = r.nextInt(6)+2; //could randomize
 
 
                             //The circle starts from the bottom and goes counter clockwise
@@ -79,22 +83,17 @@ public class GameManager implements Updateable,Renderable{
                             double angleToAdd = ((180.0f / (numEnemies - 1)) * Math.PI / 180);
                             double angle = (90 * Math.PI / 180);
                             int enemiesCreated = 0;
-
-
                             for (int i = 0; i < numEnemies; i++) {
-                                gameEngine.addGameObject(new Enemy(centreX + radius * (float) Math.sin(angle), centreY + radius * (float) Math.cos(angle), 0));
+                                gameEngine.addGameObject(new Enemy(centreX + radius * (float) Math.sin(angle), centreY + radius * (float) Math.cos(angle)));
                                 angle += angleToAdd;
                                 enemiesCreated++;
-
 
                             }
 
                             Log.d("GameManager", enemiesCreated + " enemies created");
                         } else if (mPattern == 1) {
-                            float width = 1600;
-                            float height = 1600;
 
-                            int enemies = 8;
+                            int enemies = r.nextInt(3)+3;
 
                             float spacing = 200;
 
@@ -103,7 +102,7 @@ public class GameManager implements Updateable,Renderable{
                             float startX = centreX - (lengthX / 2);
 
                             for (int i = 0; i < enemies; i++) {
-                                gameEngine.addGameObject(new Enemy(startX, -200, 1));
+                                gameEngine.addGameObject(new Enemy(startX, -200));
                                 startX += spacing;
                             }
 
@@ -133,6 +132,11 @@ public class GameManager implements Updateable,Renderable{
 
         if (!isRunning()){
             hb.onDraw(paint,canvas);
+            paint.setTextSize(100);
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.argb(255, 255, 0, 0));
+            canvas.drawText("GAME OVER", 680, 400, paint);
         }
     }
 
@@ -149,10 +153,11 @@ public class GameManager implements Updateable,Renderable{
         mPlayerLives--;
 
         if (mPlayerLives <= 0){
-            running = false;
+
             hb = new HomeButton();
             Log.d("gm","home button created");
             Log.d("gm","hb:"+hb.button.toString());
+            running = false;
         }
     }
 

@@ -39,7 +39,7 @@ public class GameManager implements Updateable{
         mTime = 0;
         mPattern = 0;
         mPlayerLives = 100;
-        mTimeFreezeActivated = true;
+        mTimeFreezeActivated = false;
     }
 
     @Override

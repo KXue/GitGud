@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ import com.gud.git.gitgud.Engine.Circle;
 import com.gud.git.gitgud.Engine.Collideable;
 import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
+import com.gud.git.gitgud.Engine.PseudoCurve;
 import com.gud.git.gitgud.Engine.Renderable;
 import com.gud.git.gitgud.Engine.Updateable;
 import com.gud.git.gitgud.Managers.GameManager;
@@ -59,8 +61,10 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     boolean collided; //debug collision
 
-    public Player(){
+    private PseudoCurve mCurve;
 
+    public Player(){
+        mCurve = null;
         //float scaleFactor = 200/1920;
 
         Resources res = App.getContext().getResources();
@@ -130,6 +134,9 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
+        if(mCurve != null){
+            mCurve.onDraw(paint, canvas);
+        }
     }
 
     @Override
@@ -150,9 +157,24 @@ public class Player extends GameObject implements Renderable,Updateable{
             GameManager.getInstance().setTimeFreeze(false);
         }
         if (gameEngine.mInputController.getTouched()) {
-            PointF newPoint = gameEngine.mInputController.getTouchPoint();
-            moveTo(newPoint.x, newPoint.y, elapsedMillis);
+            if(GameManager.getInstance().getTimeFreezeActivated()){
+                if(mCurve == null){
+                    mCurve = new PseudoCurve(new PointF(mPositionX, mPositionY));
+                }
+                mCurve.onUpdate(elapsedMillis, gameEngine);
+            }else {
+                PointF newPoint = gameEngine.mInputController.getTouchPoint();
+                moveTo(newPoint.x, newPoint.y, elapsedMillis);
+            }
         }
+    }
+
+    public PseudoCurve getCurve(){
+        PseudoCurve retCurve = null;
+        if(mCurve != null){
+            retCurve = mCurve;
+        }
+        return retCurve;
     }
 
     void moveTo(float x, float y, long elapsedMillis){
@@ -229,13 +251,12 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
         else if (other instanceof Bullet){      //COLLIDED WITH BULLET
             if (playerCheckCollision(other.getHitbox())) {      //PLAYER ALWAYS DIE WHEN COLLIDING WITH BULLET  (except when invincible which is checked in playerdie function)
-
                 playerDie();
                 retVal = true;
             }
         }
         else{
-            //Log.d("Player","this is a game object and idk what it is");
+            Log.d("Player","this is a game object and idk what it is");
         }
         return retVal;
     }

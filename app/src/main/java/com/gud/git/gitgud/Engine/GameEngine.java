@@ -102,7 +102,6 @@ public class GameEngine {
     public void onUpdate(long elapsedMillis) {
         GameManager.getInstance().onUpdate(elapsedMillis, this);
         int numGameObjects = mGameObjects.size();
-
         for (int i = 0; i < numGameObjects; i++) {
             mGameObjects.get(i).onUpdate(elapsedMillis, this);
         }

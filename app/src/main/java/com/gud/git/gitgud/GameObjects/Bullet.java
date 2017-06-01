@@ -30,6 +30,7 @@ public class Bullet extends GameObject implements Renderable,Updateable {
 
     private int mOffsetX,mOffsetY;
     float mPositionX, mPositionY, mRadius;
+    private PointF mSimulationStartPoint;
 
     float mMaxSpeed;
 

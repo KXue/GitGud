@@ -85,8 +85,8 @@ public class Player extends GameObject implements Renderable,Updateable{
         mMinX = 0 + mPlayerBitmap.getWidth()/2;
         mMinY = 0 + mPlayerBitmap.getHeight()/2;
 
-        mPositionX = 180;
-        mPositionY = App.getScreenHeight() / 2;
+        mPositionX = App.getScreenWidth() / 2;
+        mPositionY = App.getScreenHeight() / 2 +200 ;
 
         mOffsetX = mPlayerBitmap.getWidth()/2;
         mOffsetY = mPlayerBitmap.getHeight()/2;
@@ -107,8 +107,12 @@ public class Player extends GameObject implements Renderable,Updateable{
     @Override
     public void onDraw(Paint paint, Canvas canvas){
 
-        //debug circle
+        //invinicble change alpha
         if (mIsInvincible){
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.argb(255, 255, 255, 0));
+            canvas.drawText(""+mInvincibleTime, mPositionX - mOffsetX + 5, mPositionY - mOffsetY - 20, paint);
             paint.setAlpha(50);
         }
         else {
@@ -116,7 +120,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
 
         //DRAW THE PLAYER
-        canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
+        canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX , mPositionY - mOffsetY , paint);
 
 
         //debug circle
@@ -143,12 +147,15 @@ public class Player extends GameObject implements Renderable,Updateable{
             }
         }
 //        temp timefreeze stuff
+        /*
         if (mPositionX < 200){
             GameManager.getInstance().setTimeFreeze(true);
         }
         if (mPositionX > 1700){
             GameManager.getInstance().setTimeFreeze(false);
         }
+        */
+
         if (gameEngine.mInputController.getTouched()) {
             PointF newPoint = gameEngine.mInputController.getTouchPoint();
             moveTo(newPoint.x, newPoint.y, elapsedMillis);

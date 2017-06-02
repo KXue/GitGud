@@ -17,7 +17,7 @@ import com.gud.git.gitgud.R;
  * Created by Nue on 5/31/2017.
  */
 
-public class HomeButton implements Renderable{
+public class GitGudButton implements Renderable{
 
     public Bitmap mBitmap;
 
@@ -26,15 +26,15 @@ public class HomeButton implements Renderable{
     private float mPositionX,mPositionY;
     public Rect button;
 
-    public HomeButton(){
+    public GitGudButton(String imageName,int x,int y, int xscale, int yscale){
         Resources res = App.getContext().getResources();
-        mBitmap = BitmapFactory.decodeResource(res, R.drawable.home2);
+        mBitmap = BitmapFactory.decodeResource(res, res.getIdentifier(imageName , "drawable", App.getContext().getPackageName()));
 
-        mPositionX = App.getScreenWidth() / 2;
-        mPositionY = App.getScreenHeight() / 2 + 200;
+        mPositionX = x;
+        mPositionY = y;
 
-        mWidth = mBitmap.getWidth() - 400;
-        mHeight = mBitmap.getHeight() - 400;
+        mWidth = mBitmap.getWidth() - xscale;
+        mHeight = mBitmap.getHeight() - yscale;
 
         mBitmap = Bitmap.createScaledBitmap(mBitmap,mWidth,mHeight,true);
 

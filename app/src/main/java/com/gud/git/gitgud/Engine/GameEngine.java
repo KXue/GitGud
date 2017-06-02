@@ -132,13 +132,14 @@ public class GameEngine {
             mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
+            if (GameManager.getInstance().isRunning()) {    //draw gameobjects only when the game should be running. game objects wont be on the screen after losing
 
-            for(int i = 1; i < mNumGameObjects; i++){
-                mGameObjects.get(i).onDraw(mPaint, mCanvas);
+                for (int i = 1; i < mNumGameObjects; i++) {
+                    mGameObjects.get(i).onDraw(mPaint, mCanvas);
 
-            }
-            //Log.d("gameEngine onDraw","END");
-            if (GameManager.getInstance().isRunning()) {
+                }
+
+
                 mGameObjects.get(0).onDraw(mPaint, mCanvas);
             }
 

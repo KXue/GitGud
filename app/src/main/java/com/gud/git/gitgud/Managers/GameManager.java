@@ -32,6 +32,7 @@ public class GameManager implements Updateable,Renderable{
     private static GameManager sGameManager;
 
     public static GameManager getInstance(){
+
         if(sGameManager == null){
             sGameManager = new GameManager();
         }
@@ -47,11 +48,7 @@ public class GameManager implements Updateable,Renderable{
     private GameFragment mFragment;
 
     private GameManager(){
-        mTime = 0;
-        mPattern = 0;
-        mPlayerLives = 2;
-        mTimeFreezeActivated = true;
-        mRunning = true;
+        Log.d("GM","New GM created");
     }
 
     @Override
@@ -169,6 +166,16 @@ public class GameManager implements Updateable,Renderable{
 
     public void setGameFragment(GameFragment fragment){
         mFragment = fragment;
+        newGame();
+    }
+
+    public void newGame(){
+        mTime = 0;
+        mPattern = 0;
+        mPlayerLives = 2;
+        mTimeFreezeActivated = true;
+        mRunning = true;
+        mHomeButton = null;
     }
 
 }

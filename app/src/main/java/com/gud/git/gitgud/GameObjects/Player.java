@@ -85,8 +85,8 @@ public class Player extends GameObject implements Renderable,Updateable{
         mMinX = 0 + mPlayerBitmap.getWidth()/2;
         mMinY = 0 + mPlayerBitmap.getHeight()/2;
 
-        mPositionX = 512;
-        mPositionY = 700;
+        mPositionX = 180;
+        mPositionY = App.getScreenHeight() / 2;
 
         mOffsetX = mPlayerBitmap.getWidth()/2;
         mOffsetY = mPlayerBitmap.getHeight()/2;
@@ -206,7 +206,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         if (!mIsInvincible) {
             GameManager.getInstance().playerLoseLife();
             mPositionX = App.getScreenWidth() / 2;
-            mPositionY = App.getScreenHeight() / 2;
+            mPositionY = App.getScreenHeight() / 2 + 300;
             mHitbox.moveCircle(mPositionX,mPositionY);
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;

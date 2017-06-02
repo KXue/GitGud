@@ -31,11 +31,16 @@ public class HomeButton implements Renderable{
         mBitmap = BitmapFactory.decodeResource(res, R.drawable.home2);
 
         mPositionX = App.getScreenWidth() / 2;
-        mPositionY = App.getScreenHeight() / 2;
-        mWidth = mBitmap.getWidth();
-        mHeight = mBitmap.getHeight();
-        mOffsetX = mBitmap.getWidth()/2;
-        mOffsetY = mBitmap.getHeight()/2;
+        mPositionY = App.getScreenHeight() / 2 + 200;
+
+        mWidth = mBitmap.getWidth() - 400;
+        mHeight = mBitmap.getHeight() - 400;
+
+        mBitmap = Bitmap.createScaledBitmap(mBitmap,mWidth,mHeight,true);
+
+        mOffsetX = mWidth/2;
+        mOffsetY = mHeight/2;
+
         button = new Rect ((int)(mPositionX - mOffsetX),(int) (mPositionY - mOffsetX),(int) (mPositionX + mOffsetX),(int) (mPositionY + mOffsetY));
 
     }

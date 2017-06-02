@@ -29,24 +29,28 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     private int mWidth, mHeight;
 
     private int mOffsetX,mOffsetY;
-    float mPositionX, mPositionY, mRadius;
     private PointF mSimulationStartPoint;
 
-    float mMaxSpeed;
+    private float mPositionX, mPositionY, mRadius;
+
+    private float mMaxSpeed;
+    private long mDelay;
+
+    private float mLifeTime; // remove this game object after a certain amount of time
 
     //bullet visual projection
     private static Bitmap mBulletBitmap;
     private static boolean bitmapCreated = false;
 
-    Circle mHitbox;
-    PointF mDirection;
+    private Circle mHitbox;
+    private PointF mDirection;
 
 
+    //speed should be below 0.5f or so
+    public Bullet(float startX, float startY, float dirX, float dirY, float speed, long delay){
 
-    public Bullet(float startX, float startY, float endX, float endY){
-
-        Log.d("bullet cons","start:"+startX+" "+startY);
-        Log.d("bullet cons","end:"+endX+" "+endY);
+        //Log.d("bullet cons","start:"+startX+" "+startY);
+        //Log.d("bullet cons","end:"+dirX+" "+dirY);
         mWidth = 25;
         mHeight = 25;
 
@@ -70,13 +74,21 @@ public class Bullet extends GameObject implements Renderable,Updateable {
         mOffsetX = mBulletBitmap.getWidth()/2;
         mOffsetY = mBulletBitmap.getHeight()/2;
 
-        mMaxSpeed = 0.5f;
+        mMaxSpeed = speed;
+        mDelay = delay;
+
+        mLifeTime = 7000; //7 seconds moving across the screen diagonally at 0.3f
 
         mHitbox = new Circle(mPositionX,mPositionY,10);
 
+        mDirection = new PointF();
+        mDirection.x = dirX;
+        mDirection.y = dirY;
+        /*
         float distanceX = endX - startX;
         float distanceY = endY - startY;
         float magnitude = (float)Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
         mDirection = new PointF();
         if(magnitude == 0) {
             mDirection.x = 0;
@@ -85,6 +97,7 @@ public class Bullet extends GameObject implements Renderable,Updateable {
             mDirection.x = distanceX / magnitude;
             mDirection.y = distanceY / magnitude;
         }
+        */
 
 
     }
@@ -110,23 +123,24 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
 
+
+
         if (!GameManager.getInstance().getTimeFreezeActivated()) {
-            if (mPositionX < 0 || mPositionX > 1920 || mPositionY < 0 || mPositionY > 1080) {
+            mDelay -= elapsedMillis;
+
+            if (mPositionX < 0 || mPositionX > 1920 || mPositionY < 0 || mPositionY > 1080 || mLifeTime <= 0) {
 
                 gameEngine.removeGameObject(this);
             }
 
+            if (mDelay <= 0) {
+                mLifeTime -= elapsedMillis;
 
+                mPositionX += mMaxSpeed * mDirection.x * elapsedMillis;
+                mPositionY += mMaxSpeed * mDirection.y * elapsedMillis;
 
-            float velocityx = mMaxSpeed * mDirection.x * elapsedMillis;
-            float velocityy = mMaxSpeed * mDirection.y * elapsedMillis;
-
-            //Log.d("bullet update",""+velocityx+" "+velocityy);
-
-            mPositionX += mMaxSpeed * mDirection.x * elapsedMillis;
-            mPositionY += mMaxSpeed * mDirection.y * elapsedMillis;
-
-            mHitbox.moveCircle(mPositionX, mPositionY);
+                mHitbox.moveCircle(mPositionX, mPositionY);
+            }
         }
 
     }

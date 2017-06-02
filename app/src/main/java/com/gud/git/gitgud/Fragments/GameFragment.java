@@ -18,10 +18,12 @@ import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.MainActivity;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener{
     private GameEngine mGameEngine;
+    private View mTimeStopView;
 
     public GameFragment() {
         // Required empty public constructor
@@ -32,17 +34,20 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
     }
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+        mTimeStopView = view.findViewById(R.id.time_stop_dialogue);
+        hideConfirmDialogue();
         prepareAndStartGame();
     }
 
     private void prepareAndStartGame() {
         mGameEngine = new GameEngine();
         mGameEngine.setDrawSurfaceHolder(((SurfaceView)getActivity().findViewById(R.id.DrawSurface)).getHolder());
-        mGameEngine.setInputController(new InputController(getView()));
+        mGameEngine.setInputController(new InputController(getView(), mGameEngine));
         Player player = new Player();
         mGameEngine.addGameObject(player);
         mGameEngine.setPlayer(player);
-        mGameEngine.addGameObject(new Enemy(1920,1080,0));
+        mGameEngine.addGameObject(new Enemy(1920,1080));
+        GameManager.getInstance().setGameFragment(this);
         mGameEngine.startGame();
     }
 
@@ -50,6 +55,25 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
     public void onClick(View v) {
         if(v.getId() == R.id.btn_play_pause){
         }
+    }
+    public void showConfirmDialogue(int x, int y){
+        class ShowTimeStoptask implements Runnable {
+            private int x, y;
+            public ShowTimeStoptask(int x, int y){
+                this.x = x;
+                this.y = y;
+            }
+            @Override
+            public void run(){
+                mTimeStopView.setVisibility(View.VISIBLE);
+                mTimeStopView.setTranslationX(x);
+                mTimeStopView.setTranslationY(y);
+            }
+        };
+        getActivity().runOnUiThread(new ShowTimeStoptask(x, y));
+    }
+    public void hideConfirmDialogue(){
+        mTimeStopView.setVisibility(View.GONE);
     }
 
     @Override

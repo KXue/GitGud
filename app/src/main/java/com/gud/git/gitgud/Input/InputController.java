@@ -4,6 +4,8 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.gud.git.gitgud.Engine.GameEngine;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 /**
@@ -11,23 +13,41 @@ import com.gud.git.gitgud.R;
  */
 
 public class InputController{
-    private boolean mTouched, mTimeStop;
+    private GameEngine mGameEngine;
+    private boolean mTouched;
     private float mTouchX, mTouchY;
     private int mMainFingerID;
 
 
-    public InputController(View view){
+    public InputController(View view, GameEngine gameEngine){
         view.findViewById(R.id.DrawSurface).setOnTouchListener(new RegularTouchListener());
+        view.findViewById(R.id.time_stop_confirm_button).setOnTouchListener(new DialogueConfirmTouchListener());
+        view.findViewById(R.id.time_stop_cancel_button).setOnTouchListener(new DialogueCancelTouchListener());
+
+        mGameEngine = gameEngine;
         mTouched = false;
-        mTimeStop = false;
         mTouchX = -1;
         mTouchY = -1;
+    }
+    private class DialogueConfirmTouchListener implements View.OnTouchListener{
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return false;
+        }
+    }
+    private class DialogueCancelTouchListener implements View.OnTouchListener{
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return false;
+        }
     }
     private class RegularTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getPointerCount() > 1 && !mTimeStop) {
-                mTimeStop = true;
+            if (event.getPointerCount() > 1 && !GameManager.getInstance().getTimeFreezeActivated()) {
+                GameManager.getInstance().setTimeFreeze(true);
             }
 
             int action = event.getActionMasked();
@@ -37,10 +57,15 @@ public class InputController{
                     mTouched = true;
                     mTouchX = event.getX(0);
                     mTouchY = event.getY(0);
-                    mMainFingerID = event.getPointerId(0);
+                    if(GameManager.getInstance().getTimeFreezeActivated()) {
+                        GameManager.getInstance().hideConfirmDialogue();
+                    }
                     break;
                 case MotionEvent.ACTION_UP:
                     mTouched = false;
+                    if(GameManager.getInstance().getTimeFreezeActivated()){
+                        GameManager.getInstance().showConfirmDialogue((int)event.getX(), (int)event.getY());
+                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
                     for(int i = 0; i < event.getPointerCount(); i++){
@@ -66,12 +91,6 @@ public class InputController{
             }
             return true;
         }
-    }
-    public boolean isTimeStop(){
-        return mTimeStop;
-    }
-    public void resetTimeStop(){
-        mTimeStop = false;
     }
     public PointF getTouchPoint(){
         return new PointF(mTouchX, mTouchY);

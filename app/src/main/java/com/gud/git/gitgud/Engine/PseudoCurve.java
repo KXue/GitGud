@@ -2,7 +2,9 @@ package com.gud.git.gitgud.Engine;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
@@ -21,10 +23,13 @@ public class PseudoCurve implements Updateable, Renderable {
     private final int mMinSquareDistance = 15 * 15;
     private double travelledDistance = 0;
     private ArrayList<PointF> mPointList = new ArrayList<>();
+    private Path mPath;
     public PseudoCurve(PointF lastPosition){
         mLastPosition = lastPosition;
         mPointList.add(mLastPosition);
         Log.d("PC", "lastPosition: " + mLastPosition.toString());
+        mPath = new Path();
+        mPath.moveTo(lastPosition.x, lastPosition.y);
     }
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine) {
@@ -35,9 +40,13 @@ public class PseudoCurve implements Updateable, Renderable {
             float squareDistance = (touchPoint.x - mLastPosition.x) * (touchPoint.x - mLastPosition.x) + (touchPoint.y - mLastPosition.y) * (touchPoint.y - mLastPosition.y);
             if(squareDistance >= mMinSquareDistance){
                 mLastPosition = touchPoint;
-                mPointList.add(mLastPosition);
+                addPoint(mLastPosition);
             }
         }
+    }
+    private void addPoint(PointF newPoint){
+        mPointList.add(newPoint);
+        mPath.lineTo(newPoint.x, newPoint.y);
     }
 
     @Override
@@ -45,10 +54,12 @@ public class PseudoCurve implements Updateable, Renderable {
         paint.setColor(Color.argb(255, 0, 255,0));
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(8);
-        for(int i = 1; i < mPointList.size(); i++){
-            canvas.drawLine(mPointList.get(i-1).x, mPointList.get(i-1).y, mPointList.get(i).x, mPointList.get(i).y, paint);
-        }
+        paint.setPathEffect(new CornerPathEffect(15));
+        canvas.drawPath(mPath, paint);
         paint.setStrokeWidth(1);
+    }
+    public PointF lastPoint(){
+        return mPointList.get(mPointList.size() - 1);
     }
     public PointF travel(double travelSpeed){
         this.travelledDistance += travelSpeed;

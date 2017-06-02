@@ -1,11 +1,20 @@
 package com.gud.git.gitgud.Managers;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.Log;
 
 import com.gud.git.gitgud.Engine.GameEngine;
-import com.gud.git.gitgud.Engine.GameObject;
+import com.gud.git.gitgud.Engine.Renderable;
 import com.gud.git.gitgud.Engine.Updateable;
+import com.gud.git.gitgud.Fragments.GameFragment;
 import com.gud.git.gitgud.GameObjects.Enemy;
+import com.gud.git.gitgud.GameObjects.HomeButton;
+
+import java.util.Random;
 
 /**
  * Created by Nue on 5/19/2017.
@@ -19,7 +28,7 @@ Pick the next pattern in order or at random
 when x time has passed, spawn the pattern
  */
 
-public class GameManager implements Updateable{
+public class GameManager implements Updateable,Renderable{
 
     private static GameManager sGameManager;
 
@@ -31,68 +40,105 @@ public class GameManager implements Updateable{
     }
 
     private long mTime;
+    private GameFragment mFragment;
     private int mPattern;
     private int mPlayerLives;
     private boolean mTimeFreezeActivated;
+    private boolean running;
+    private HomeButton hb;
 
     private GameManager(){
         mTime = 0;
         mPattern = 0;
-        mPlayerLives = 100;
+        mPlayerLives = 2;
         mTimeFreezeActivated = false;
+        running = true;
     }
-
+    public void setGameFragment(GameFragment fragment){
+        mFragment = fragment;
+    }
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
         if (elapsedMillis >= 1){
-            if (!getTimeFreezeActivated()) {
-                mTime += elapsedMillis;
+            if (isRunning()) {
+                if (!getTimeFreezeActivated()) {
+                    mTime += elapsedMillis;
 
-                if (mTime >= 2000) {
-                    mTime = 0;
-                    int centreX = 960;
-                    int centreY = 540;
+                    if (mTime >= 5000) {
+                        mTime = 0;
+                        int centreX = 960;
+                        int centreY = 540;
 
-                    //Log.d("gamemanager",""+centreX+" "+centreY);
-                    Log.d("gamemanager", "pattern " + mPattern);
+                        //Log.d("gamemanager",""+centreX+" "+centreY);
+                        Log.d("gamemanager", "pattern " + mPattern);
+                        Random r = new Random();
+                        mPattern = r.nextInt(2);
 
-                    if (mPattern == 0) {
+                        if (mPattern == 0) {
 
-                        float radius = 1500;
+                            float radius = 1000;
 
-                        int numEnemies = 6; //could randomize
-
-
-                        float angleToAdd = (float) (360 / numEnemies * Math.PI / 180);
-                        float angle = angleToAdd;
-                        int enemiesCreated = 0;
+                            int numEnemies = r.nextInt(6)+2; //could randomize
 
 
-                        for (int i = 0; i < numEnemies; i++) {
-                            gameEngine.addGameObject(new Enemy(centreX + radius * (float) Math.sin(angle), centreY + radius * (float) Math.cos(angle), 0));
-                            angle += angleToAdd;
-                            enemiesCreated++;
+                            //The circle starts from the bottom and goes counter clockwise
+
+                            double angleToAdd = ((180.0f / (numEnemies - 1)) * Math.PI / 180);
+                            double angle = (90 * Math.PI / 180);
+                            int enemiesCreated = 0;
+                            for (int i = 0; i < numEnemies; i++) {
+                                gameEngine.addGameObject(new Enemy(centreX + radius * (float) Math.sin(angle), centreY + radius * (float) Math.cos(angle)));
+                                angle += angleToAdd;
+                                enemiesCreated++;
+
+                            }
+
+                            Log.d("GameManager", enemiesCreated + " enemies created");
+                        } else if (mPattern == 1) {
+
+                            int enemies = r.nextInt(3)+3;
+
+                            float spacing = 200;
+
+                            float lengthX = (enemies * spacing) - spacing;
+
+                            float startX = centreX - (lengthX / 2);
+
+                            for (int i = 0; i < enemies; i++) {
+                                gameEngine.addGameObject(new Enemy(startX, -200));
+                                startX += spacing;
+                            }
+
                         }
-
-                      //  Log.d("GameManager", enemiesCreated + " enemies created");
-                    } else if (mPattern == 1) {
-
-                        int enemies = 8;
-
-                        float spacing = 200;
-
-                        float lengthX = (enemies * spacing) - spacing;
-
-                        float startX = centreX - (lengthX / 2);
-
-                        for (int i = 0; i < enemies; i++) {
-                            gameEngine.addGameObject(new Enemy(startX, -200, 1));
-                            startX += spacing;
-                        }
-
                     }
                 }
             }
+            else {
+                if (gameEngine.mInputController.getTouched()) {
+                    PointF newPoint = gameEngine.mInputController.getTouchPoint();
+                    if (hb.checkClick((int)newPoint.x,(int)newPoint.y)){
+                        Log.d("gm","clicked inside");
+                    }
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void onDraw(Paint paint, Canvas canvas){
+        paint.setTextSize(30);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.argb(255, 255, 255, 0));
+        canvas.drawText("Lives: "+mPlayerLives, 20, 30, paint);
+        if (!isRunning()){
+            hb.onDraw(paint,canvas);
+            paint.setTextSize(100);
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.argb(255, 255, 0, 0));
+            canvas.drawText("GAME OVER", 680, 400, paint);
         }
     }
 
@@ -101,7 +147,36 @@ public class GameManager implements Updateable{
         return mTimeFreezeActivated;
     }
 
+    public void showConfirmDialogue(int x, int y){
+        if(mFragment != null){
+            mFragment.showConfirmDialogue(x, y);
+        }
+    }
+
+    public void hideConfirmDialogue(){
+        if(mFragment != null){
+            mFragment.hideConfirmDialogue();
+        }
+    }
+
     public void setTimeFreeze(boolean state){
         mTimeFreezeActivated = state;
     }
+
+    public void playerLoseLife(){
+        mPlayerLives--;
+
+        if (mPlayerLives <= 0){
+
+            hb = new HomeButton();
+            Log.d("gm","home button created");
+            Log.d("gm","hb:"+hb.button.toString());
+            running = false;
+        }
+    }
+
+    public boolean isRunning(){
+        return running;
+    }
+
 }

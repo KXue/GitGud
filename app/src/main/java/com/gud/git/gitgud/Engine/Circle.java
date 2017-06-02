@@ -55,4 +55,7 @@ public class Circle{
         return mPositionY;
     }
 
+    public int getRadius() {
+        return (int)mRadius;
+    }
 }

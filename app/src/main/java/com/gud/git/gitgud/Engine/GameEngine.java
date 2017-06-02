@@ -132,16 +132,15 @@ public class GameEngine {
             mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
-            //int numGameObjects = mGameObjects.size();
-            //Log.d("gameEngine onDraw START","numGameObjects:"+mNumGameObjects);
+
             for(int i = 1; i < mNumGameObjects; i++){
-                //Log.d("gameEngine onDrawonDraw","numGameObjects:"+mNumGameObjects);
                 mGameObjects.get(i).onDraw(mPaint, mCanvas);
 
             }
             //Log.d("gameEngine onDraw","END");
-
-            mGameObjects.get(0).onDraw(mPaint, mCanvas);
+            if (GameManager.getInstance().isRunning()) {
+                mGameObjects.get(0).onDraw(mPaint, mCanvas);
+            }
 
             GameManager.getInstance().onDraw(mPaint, mCanvas);
 

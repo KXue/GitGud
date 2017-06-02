@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.util.Log;
 
 import com.gud.git.gitgud.Engine.GameEngine;
@@ -43,15 +42,16 @@ public class GameManager implements Updateable,Renderable{
     private int mPattern;
     private int mPlayerLives;
     private boolean mTimeFreezeActivated;
-    private boolean running;
-    private HomeButton hb;
+    private boolean mRunning;
+    private HomeButton mHomeButton;
+    private GameFragment mFragment;
 
     private GameManager(){
         mTime = 0;
         mPattern = 0;
         mPlayerLives = 2;
         mTimeFreezeActivated = true;
-        running = true;
+        mRunning = true;
     }
 
     @Override
@@ -113,8 +113,9 @@ public class GameManager implements Updateable,Renderable{
             else {
                 if (gameEngine.mInputController.getTouched()) {
                     PointF newPoint = gameEngine.mInputController.getTouchPoint();
-                    if (hb.checkClick((int)newPoint.x,(int)newPoint.y)){
+                    if (mHomeButton.checkClick((int)newPoint.x,(int)newPoint.y)){
                         Log.d("gm","clicked inside");
+                        mFragment.startNewGame();
                     }
                 }
             }
@@ -131,7 +132,7 @@ public class GameManager implements Updateable,Renderable{
         canvas.drawText("Lives: "+mPlayerLives, 20, 30, paint);
 
         if (!isRunning()){
-            hb.onDraw(paint,canvas);
+            mHomeButton.onDraw(paint,canvas);
             paint.setTextSize(100);
             paint.setTextAlign(Paint.Align.LEFT);
             paint.setStyle(Paint.Style.FILL);
@@ -154,15 +155,20 @@ public class GameManager implements Updateable,Renderable{
 
         if (mPlayerLives <= 0){
 
-            hb = new HomeButton();
+            mHomeButton = new HomeButton();
             Log.d("gm","home button created");
-            Log.d("gm","hb:"+hb.button.toString());
-            running = false;
+            Log.d("gm","hb:"+mHomeButton.button.toString());
+            mRunning = false;
+
         }
     }
 
     public boolean isRunning(){
-        return running;
+        return mRunning;
+    }
+
+    public void setGameFragment(GameFragment fragment){
+        mFragment = fragment;
     }
 
 }

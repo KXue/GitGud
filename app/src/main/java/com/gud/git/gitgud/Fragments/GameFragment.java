@@ -18,6 +18,7 @@ import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
 import com.gud.git.gitgud.MainActivity;
+import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener{
@@ -42,7 +43,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         Player player = new Player();
         mGameEngine.addGameObject(player);
         mGameEngine.setPlayer(player);
-        mGameEngine.addGameObject(new Enemy(1920,1080,0));
+        mGameEngine.addGameObject(new Enemy(1920,1080));
+        GameManager.getInstance().setGameFragment(this);
         mGameEngine.startGame();
     }
 

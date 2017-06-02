@@ -89,8 +89,8 @@ public class Player extends GameObject implements Renderable,Updateable{
         mMinX = 0 + mPlayerBitmap.getWidth()/2;
         mMinY = 0 + mPlayerBitmap.getHeight()/2;
 
-        mPositionX = 512;
-        mPositionY = 700;
+        mPositionX = App.getScreenWidth() / 2;
+        mPositionY = App.getScreenHeight() / 2 +200 ;
 
         mOffsetX = mPlayerBitmap.getWidth()/2;
         mOffsetY = mPlayerBitmap.getHeight()/2;
@@ -111,8 +111,12 @@ public class Player extends GameObject implements Renderable,Updateable{
     @Override
     public void onDraw(Paint paint, Canvas canvas){
 
-        //debug circle
+        //invinicble change alpha
         if (mIsInvincible){
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.argb(255, 255, 255, 0));
+            canvas.drawText(""+mInvincibleTime, mPositionX - mOffsetX + 5, mPositionY - mOffsetY - 20, paint);
             paint.setAlpha(50);
         }
         else {
@@ -120,7 +124,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
 
         //DRAW THE PLAYER
-        canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
+        canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX , mPositionY - mOffsetY , paint);
 
 
         //debug circle
@@ -150,12 +154,15 @@ public class Player extends GameObject implements Renderable,Updateable{
             }
         }
 //        temp timefreeze stuff
+        /*
         if (mPositionX < 200){
             GameManager.getInstance().setTimeFreeze(true);
         }
         if (mPositionX > 1700){
             GameManager.getInstance().setTimeFreeze(false);
         }
+        */
+
         if (gameEngine.mInputController.getTouched()) {
             if(GameManager.getInstance().getTimeFreezeActivated()){
                 if(mCurve == null){
@@ -228,7 +235,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         if (!mIsInvincible) {
             GameManager.getInstance().playerLoseLife();
             mPositionX = App.getScreenWidth() / 2;
-            mPositionY = App.getScreenHeight() / 2;
+            mPositionY = App.getScreenHeight() / 2 + 300;
             mHitbox.moveCircle(mPositionX,mPositionY);
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;

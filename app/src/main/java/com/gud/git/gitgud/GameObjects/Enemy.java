@@ -30,11 +30,10 @@ public class Enemy extends GameObject {
     private int mOffsetX,mOffsetY;
 
     private float mPositionX,mPositionY,mRadius;
-    private int mMoveType = 0;
 
     private float mMaxSpeed;
 
-    private final long RELOAD_TIME = 1000;
+    private final long RELOAD_TIME = 2500;
     private long currentReload;
 
     private Circle mHitbox;
@@ -87,24 +86,10 @@ public class Enemy extends GameObject {
         if (distance != 0) {
             float vX = 0;
             float vY = 0;
-            if (mMoveType == 0) {
-                vX = (dX / distance) * mMaxSpeed * elapsedMillis;
-                vY = (dY / distance) * mMaxSpeed * elapsedMillis;
 
-            } else if (mMoveType == 1) {
-                if (mPositionX > x){
-                    vX = -mMaxSpeed * elapsedMillis;
-                }
-                else if (mPositionX < x){
-                    vX = mMaxSpeed * elapsedMillis;
-                }
-                if (mPositionY > y){
-                    vY = -mMaxSpeed * elapsedMillis;
-                }
-                else if (mPositionY < y){
-                    vY = mMaxSpeed * elapsedMillis;
-                }
-            }
+            vX = (dX / distance) * mMaxSpeed * elapsedMillis;
+            vY = (dY / distance) * mMaxSpeed * elapsedMillis;
+
 
             if (Math.abs(vX) > Math.abs(dX)) {
                 mPositionX = x;

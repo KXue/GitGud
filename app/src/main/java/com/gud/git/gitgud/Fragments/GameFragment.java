@@ -46,7 +46,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener{
         Player player = new Player();
         mGameEngine.addGameObject(player);
         mGameEngine.setPlayer(player);
-        mGameEngine.addGameObject(new Enemy(1920,1080));
         GameManager.getInstance().setGameFragment(this);
         mGameEngine.startGame();
     }

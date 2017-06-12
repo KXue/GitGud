@@ -151,24 +151,21 @@ public class GameEngine {
 
 
     public void onDraw() {
+        ArrayList<GameObject> copyObjects = new ArrayList<>(mGameObjects);
         if(mDrawSurfaceHolder.getSurface().isValid()){
             mCanvas = mDrawSurfaceHolder.lockCanvas();
             mPaint.setColor(Color.argb(255, 100, 100, 100));
             mCanvas.drawColor(mPaint.getColor());
 
             if (GameManager.getInstance().isRunning()) {    //draw gameobjects only when the game should be running. game objects wont be on the screen after losing
-
-                for (int i = 0; i < mGameObjects.size(); i++) {
-                    mGameObjects.get(i).onDraw(mPaint, mCanvas);
+                for (int i = 0; i < copyObjects.size(); i++) {
+                    copyObjects.get(i).onDraw(mPaint, mCanvas);
                 }
             }
 
             GameManager.getInstance().onDraw(mPaint, mCanvas);
-
             mDrawSurfaceHolder.unlockCanvasAndPost(mCanvas);
         }
-
-
     }
 
     public void checkCollision() {

@@ -51,6 +51,7 @@ public class Player extends GameObject implements Renderable,Updateable{
     Circle mHitbox;
 
     boolean mIsInvincible;
+    private boolean mFollowCurve = false;
 
     // Invincible time in milliseconds
     long mInvincibleTime;
@@ -101,6 +102,7 @@ public class Player extends GameObject implements Renderable,Updateable{
 
         mSpeedFactor = 0.001f;
         mMaxSpeedNormal = 2f;
+        mMaxSpeedTimeFreeze = 2.5f;
 
         mIsInvincible = true;
         mInvincibleTime = INVINCIBLE_TIME;
@@ -127,17 +129,17 @@ public class Player extends GameObject implements Renderable,Updateable{
         canvas.drawBitmap(mPlayerBitmap, mPositionX - mOffsetX , mPositionY - mOffsetY , paint);
 
 
-        //debug circle
+//        //debug circle
         paint.setAlpha(255);
-
-        if (collided){
-            paint.setColor(Color.argb(255, 255, 0, 255));
-        }
-        else {
-            paint.setColor(Color.argb(255, 0, 0, 255));
-        }
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
+//
+//        if (collided){
+//            paint.setColor(Color.argb(255, 255, 0, 255));
+//        }
+//        else {
+//            paint.setColor(Color.argb(255, 0, 0, 255));
+//        }
+//        paint.setStyle(Paint.Style.STROKE);
+//        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
         if(mCurve != null){
             mCurve.onDraw(paint, canvas);
         }
@@ -153,29 +155,29 @@ public class Player extends GameObject implements Renderable,Updateable{
                 mIsInvincible = false;
             }
         }
-//        temp timefreeze stuff
-        /*
-        if (mPositionX < 200){
-            GameManager.getInstance().setTimeFreeze(true);
-        }
-        if (mPositionX > 1700){
-            GameManager.getInstance().setTimeFreeze(false);
-        }
-        */
-
-        if (gameEngine.mInputController.getTouched()) {
-            if(GameManager.getInstance().getTimeFreezeActivated()){
-                if(mCurve == null){
-                    mCurve = new PseudoCurve(new PointF(mPositionX, mPositionY));
+        if(!mFollowCurve){
+            if (gameEngine.mInputController.getTouched()) {
+                if(mCurve != null){
+                    mCurve.onUpdate(elapsedMillis, gameEngine);
+                }else {
+                    PointF newPoint = gameEngine.mInputController.getTouchPoint();
+                    moveTo(newPoint.x, newPoint.y, elapsedMillis);
                 }
-                mCurve.onUpdate(elapsedMillis, gameEngine);
-            }else {
-                PointF newPoint = gameEngine.mInputController.getTouchPoint();
-                moveTo(newPoint.x, newPoint.y, elapsedMillis);
+            }
+        }else if(mCurve != null){
+            PointF nextLocation = mCurve.travel(mMaxSpeedTimeFreeze * elapsedMillis);
+            mPositionX = nextLocation.x;
+            mPositionY = nextLocation.y;
+            mHitbox.moveCircle(mPositionX,mPositionY);
+            if(mCurve.getLength() - mCurve.getTravelledDistance() <  0.01){
+                mFollowCurve = false;
+                mCurve = null;
             }
         }
     }
-
+    public long getSimulatedTime(){
+        return (long)(mCurve.getLength()/mMaxSpeedTimeFreeze);
+    }
     public PseudoCurve getCurve(){
         PseudoCurve retCurve = null;
         if(mCurve != null){
@@ -239,7 +241,6 @@ public class Player extends GameObject implements Renderable,Updateable{
             mHitbox.moveCircle(mPositionX,mPositionY);
             mIsInvincible = true;
             mInvincibleTime = INVINCIBLE_TIME;
-
         }
     }
 
@@ -247,25 +248,11 @@ public class Player extends GameObject implements Renderable,Updateable{
     public boolean checkCollision(Collideable other){
         boolean retVal = false;
 
-        if (other instanceof Enemy){        //COLLIDED WITH ENEMY
-            if (playerCheckCollision(other.getHitbox())){
-                if (GameManager.getInstance().getTimeFreezeActivated()) {
-
-                }
-                else{
-                    playerDie();    //NOT IN TIMEFREEZE AND TOUCHED AN ENEMY, PLAYER DIES
-                }
-                retVal = true;
+        if (playerCheckCollision(other.getHitbox())){
+            if (mCurve == null) {
+                playerDie();    //NOT IN TIMEFREEZE AND TOUCHED AN ENEMY, PLAYER DIES
             }
-        }
-        else if (other instanceof Bullet){      //COLLIDED WITH BULLET
-            if (playerCheckCollision(other.getHitbox())) {      //PLAYER ALWAYS DIE WHEN COLLIDING WITH BULLET  (except when invincible which is checked in playerdie function)
-                playerDie();
-                retVal = true;
-            }
-        }
-        else{
-            Log.d("Player","this is a game object and idk what it is");
+            retVal = true;
         }
         return retVal;
     }
@@ -282,4 +269,18 @@ public class Player extends GameObject implements Renderable,Updateable{
         return mPositionY;
     }
 
+    @Override
+    public void beginSimulation() {
+        mCurve = new PseudoCurve(new PointF(mPositionX, mPositionY));
+    }
+
+    @Override
+    public void cancelSimulation() {
+        mCurve = null;
+    }
+
+    @Override
+    public void confirmSimulation() {
+        mFollowCurve = true;
+    }
 }

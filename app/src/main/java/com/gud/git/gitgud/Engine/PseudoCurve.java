@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 public class PseudoCurve implements Updateable, Renderable {
     private PointF mLastPosition;
+    private double mLength = 0;
     private final int mMinSquareDistance = 15 * 15;
     private double travelledDistance = 0;
     private ArrayList<PointF> mPointList = new ArrayList<>();
@@ -45,6 +46,8 @@ public class PseudoCurve implements Updateable, Renderable {
         }
     }
     private void addPoint(PointF newPoint){
+        mLength += getDistance(newPoint, mPointList.get(mPointList.size()-1));
+        Log.d("Curve", "length: " + mLength);
         mPointList.add(newPoint);
         mPath.lineTo(newPoint.x, newPoint.y);
     }
@@ -69,30 +72,31 @@ public class PseudoCurve implements Updateable, Renderable {
         return travelledDistance;
     }
     public PointF getPosition(double travelledDistance){
+        Log.d("curve", "total" + travelledDistance);
         double totalDistance = travelledDistance;
         double lineDistance;
         PointF retPoint =  mPointList.get(0);
         for(int i = 1; i < mPointList.size(); i++){
             lineDistance = getDistance(mPointList.get(i-1), mPointList.get(i));
+            Log.d("curve", "total" + totalDistance);
             if(totalDistance > lineDistance){
                 totalDistance -= lineDistance;
             }
             else{
+                totalDistance = -1;
                 retPoint = findInterpolatedPoint(mPointList.get(i-1), mPointList.get(i), totalDistance);
                 break;
             }
         }
+        Log.d("curve", "retpoint" + retPoint.toString());
         if(totalDistance > 0){
             retPoint = mPointList.get(mPointList.size() - 1);
         }
+
         return retPoint;
     }
     public double getLength(){
-        double length = 0;
-        for(int i = 1; i < mPointList.size(); i++){
-            length += getDistance(mPointList.get(i-1), mPointList.get(i));
-        }
-        return length;
+        return mLength;
     }
     private PointF findInterpolatedPoint(PointF from, PointF to, double distance){
         double distanceFraction = distance / getDistance(from, to);

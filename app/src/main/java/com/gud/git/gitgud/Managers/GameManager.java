@@ -46,7 +46,6 @@ public class GameManager implements Updateable,Renderable{
     private boolean mTimeFreezeActivated;
     private boolean mRunning;
     private GitGudButton mHomeButton;
-    private GitGudButton mPauseButton,mUnpauseButton;
     private GameFragment mFragment;
     private int mScore;
     private int mTimeFreezeTime;    //time freeze time in milliseconds
@@ -61,17 +60,6 @@ public class GameManager implements Updateable,Renderable{
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
         if (elapsedMillis >= 1){// game is updating
             if (isRunning()) {  //game is running
-
-                //check time freeze button presses
-                if (gameEngine.mInputController.getTouched()) {
-                    PointF newPoint = gameEngine.mInputController.getTouchPoint();
-                    if (mPauseButton.checkClick((int)newPoint.x,(int)newPoint.y)){
-                        setTimeFreeze(true);
-                    }
-                    else if(mUnpauseButton.checkClick((int)newPoint.x,(int)newPoint.y)) {
-                        setTimeFreeze(false);
-                    }
-                }
 
                 if (!getTimeFreezeActivated()) {    //not time freezed
 
@@ -142,6 +130,8 @@ public class GameManager implements Updateable,Renderable{
                     if (mTimeFreezeTime <= 0){
                         setTimeFreeze(false);
                         mTimeFreezeTime = 0;
+                        gameEngine.cancelTimeStop();
+                        hideConfirmDialogue();
                     }
                 }
             }
@@ -167,8 +157,6 @@ public class GameManager implements Updateable,Renderable{
         canvas.drawText("Lives: "+mPlayerLives, 20, 30, paint);
         canvas.drawText("Score: "+mScore, 20, 60, paint);
         canvas.drawText("Time Freeze: "+mTimeFreezeTime+" ms", 20, 90, paint);
-        canvas.drawLine(200,0,200,1080,paint);
-        canvas.drawLine(1700,0,1700,1080,paint);
         if (!isRunning()){
             mHomeButton.onDraw(paint,canvas);
             paint.setTextSize(100);
@@ -176,10 +164,6 @@ public class GameManager implements Updateable,Renderable{
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(Color.argb(255, 255, 0, 0));
             canvas.drawText("GAME OVER", 680, 400, paint);
-        }
-        else{
-            mPauseButton.onDraw(paint,canvas);
-            mUnpauseButton.onDraw(paint,canvas);
         }
     }
 
@@ -230,17 +214,12 @@ public class GameManager implements Updateable,Renderable{
         mTime = 0;
         mPattern = 0;
         mPlayerLives = 3;
-        mTimeFreezeActivated = true;
+        mTimeFreezeActivated = false;
         mRunning = true;
         mHomeButton = null;
         mScore = 0;
         mTimeFreezeTime = 5000;
         mNextSpawnTime = 0;
-        Log.d("gm","next spawn time:"+mNextSpawnTime);
-
-        mPauseButton = new GitGudButton("pause2",100,980,700,670);
-        mUnpauseButton = new GitGudButton("play2",1820,980,700,670);
-        Log.d("gm","pause button:"+mPauseButton.button.toString());
 
     }
 

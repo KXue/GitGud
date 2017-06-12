@@ -10,4 +10,7 @@ import com.gud.git.gitgud.R;
  */
 
 public abstract class GameObject implements Updateable, Renderable, Collideable{
+    public abstract void beginSimulation();
+    public abstract void cancelSimulation();
+    public abstract void confirmSimulation();
 }

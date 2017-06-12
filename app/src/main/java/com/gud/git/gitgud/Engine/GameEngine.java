@@ -10,6 +10,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gud.git.gitgud.GameObjects.Bullet;
 import com.gud.git.gitgud.GameObjects.Enemy;
 import com.gud.git.gitgud.GameObjects.Player;
 import com.gud.git.gitgud.Input.InputController;
@@ -30,10 +31,13 @@ public class GameEngine {
     private Canvas mCanvas;
     private SurfaceHolder mDrawSurfaceHolder;
 
+    private enum SimulationState{NONE, START, CONFIRM, CANCEL}
+
+    private SimulationState mSimulationState = SimulationState.NONE;
     private List<GameObject> mGameObjects = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToAdd = new ArrayList<GameObject>();
     private List<GameObject> mObjectsToRemove = new ArrayList<GameObject>();
-    private SpatialHash mCollisionSpatialHash = new SpatialHash(300);
+    private SpatialHash mCollisionSpatialHash = new SpatialHash(200);
     private UpdateThread mUpdateThread;
     private DrawThread mDrawThread;
 
@@ -103,6 +107,26 @@ public class GameEngine {
         if (GameManager.getInstance().isRunning()) {
             GameManager.getInstance().onUpdate(elapsedMillis, this);
             int numGameObjects = mGameObjects.size();
+            if(mSimulationState != SimulationState.NONE){
+                switch(mSimulationState){
+                    case START:
+                        for(GameObject object : mGameObjects){
+                            object.beginSimulation();
+                        }
+                        break;
+                    case CONFIRM:
+                        for(GameObject object : mGameObjects){
+                            object.confirmSimulation();
+                        }
+                        break;
+                    case CANCEL:
+                        for(GameObject object : mGameObjects){
+                            object.cancelSimulation();
+                        }
+                        break;
+                }
+                mSimulationState = SimulationState.NONE;
+            }
 
             for (int i = 0; i < numGameObjects; i++) {
                 mGameObjects.get(i).onUpdate(elapsedMillis, this);
@@ -134,13 +158,10 @@ public class GameEngine {
 
             if (GameManager.getInstance().isRunning()) {    //draw gameobjects only when the game should be running. game objects wont be on the screen after losing
 
-                for (int i = 1; i < mNumGameObjects; i++) {
+                for (int i = 0; i < mNumGameObjects; i++) {
                     mGameObjects.get(i).onDraw(mPaint, mCanvas);
 
                 }
-
-
-                mGameObjects.get(0).onDraw(mPaint, mCanvas);
             }
 
             GameManager.getInstance().onDraw(mPaint, mCanvas);
@@ -158,20 +179,25 @@ public class GameEngine {
             mCollisionSpatialHash.insertObject(o);
         }
 
+//        for(GameObject p : mGameObjects){
+//            for(GameObject o : mCollisionSpatialHash.getPotentialColliders(p)){
+//               if(p.checkCollision(o)){
+//                   removeGameObject(o);
+//                   removeGameObject(p);
+//               }
+//            }
+//        }
+
         for (GameObject p : mCollisionSpatialHash.getPotentialColliders(mPlayer)) {
             if (mPlayer.checkCollision(p)) {
-                if (manager.getTimeFreezeActivated()) {
-
-                    if (p instanceof Enemy) {
+                if (mPlayer.getCurve() != null) {
+                    if (p instanceof Enemy || p instanceof Bullet) {
                         removeGameObject(p);
                     }
-                } else {
-
                 }
             }
 
         }
-
         mCollisionSpatialHash.clear();
 
     }
@@ -188,5 +214,17 @@ public class GameEngine {
     }
     public boolean isPaused() {
         return mUpdateThread != null && mUpdateThread.isGamePaused();
+    }
+
+    public void beginTimeStop() {
+        mSimulationState = SimulationState.START;
+    }
+
+    public void cancelTimeStop() {
+        mSimulationState = SimulationState.CANCEL;
+    }
+
+    public void confirmTimeStop() {
+        mSimulationState = SimulationState.CONFIRM;
     }
 }

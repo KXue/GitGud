@@ -15,7 +15,6 @@ import com.gud.git.gitgud.Engine.GameEngine;
 import com.gud.git.gitgud.Engine.GameObject;
 import com.gud.git.gitgud.Engine.Renderable;
 import com.gud.git.gitgud.Engine.Updateable;
-import com.gud.git.gitgud.Managers.GameManager;
 import com.gud.git.gitgud.R;
 import com.gud.git.gitgud.Engine.Circle;
 
@@ -29,7 +28,8 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     private int mWidth, mHeight;
 
     private int mOffsetX,mOffsetY;
-    private PointF mSimulationStartPoint;
+    private PointF mSimulationEndPoint;
+    private boolean mIsSimulating = false;
 
     private float mPositionX, mPositionY, mRadius;
 
@@ -41,6 +41,8 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     //bullet visual projection
     private static Bitmap mBulletBitmap;
     private static boolean bitmapCreated = false;
+
+    private GameObject mParent;
 
     private Circle mHitbox;
     private PointF mDirection;
@@ -101,7 +103,9 @@ public class Bullet extends GameObject implements Renderable,Updateable {
 
 
     }
-
+    public void setParent(GameObject parent){
+        mParent = parent;
+    }
 
 
     //spawn yo bullets
@@ -115,17 +119,21 @@ public class Bullet extends GameObject implements Renderable,Updateable {
     public void onDraw(Paint paint, Canvas canvas){
         canvas.drawBitmap(mBulletBitmap,mPositionX - mOffsetX,mPositionY - mOffsetY,paint);
 
-        paint.setColor(Color.argb(255, 0, 255,0));
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
+//        paint.setColor(Color.argb(255, 0, 255,0));
+//        paint.setStyle(Paint.Style.STROKE);
+//        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
+
+        paint.setColor(Color.YELLOW);
+        paint.setStrokeWidth(8);
+        if(mSimulationEndPoint != null && mIsSimulating){
+            canvas.drawLine(mPositionX, mPositionY, mSimulationEndPoint.x, mSimulationEndPoint.y, paint);
+        }
     }
 
     @Override
     public void onUpdate(long elapsedMillis, GameEngine gameEngine){
 
-
-
-        if (!GameManager.getInstance().getTimeFreezeActivated()) {
+        if (!mIsSimulating) {
             mDelay -= elapsedMillis;
 
             if (mPositionX < 0 || mPositionX > 1920 || mPositionY < 0 || mPositionY > 1080 || mLifeTime <= 0) {
@@ -141,16 +149,43 @@ public class Bullet extends GameObject implements Renderable,Updateable {
 
                 mHitbox.moveCircle(mPositionX, mPositionY);
             }
+        }else {
+            long totalTime = gameEngine.getPlayer().getSimulatedTime();
+            long simulatedDelay = mDelay - totalTime;
+            if(simulatedDelay <= 0){
+                mSimulationEndPoint.x = mPositionX + mMaxSpeed * mDirection.x * totalTime;
+                mSimulationEndPoint.y = mPositionY + mMaxSpeed * mDirection.y * totalTime;
+            }
         }
 
     }
 
     @Override
     public boolean checkCollision(Collideable other) {
-        return false;
+        boolean retval = false;
+        if(other instanceof  Enemy && this.getHitbox().intersect(other.getHitbox()) && mParent != null && mParent != other){
+            retval = true;
+        }
+        return retval;
     }
 
     public Circle getHitbox(){
         return mHitbox;
+    }
+
+    @Override
+    public void beginSimulation() {
+        mIsSimulating = true;
+        mSimulationEndPoint = new PointF(mPositionX, mPositionY);
+    }
+
+    @Override
+    public void cancelSimulation() {
+        mIsSimulating = false;
+    }
+
+    @Override
+    public void confirmSimulation() {
+        mIsSimulating = false;
     }
 }

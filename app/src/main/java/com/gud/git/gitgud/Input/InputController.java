@@ -33,6 +33,11 @@ public class InputController{
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            if(event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                mGameEngine.confirmTimeStop();
+                GameManager.getInstance().setTimeFreeze(false);
+                GameManager.getInstance().hideConfirmDialogue();
+            }
             return false;
         }
     }
@@ -40,16 +45,17 @@ public class InputController{
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            if(event.getActionMasked() == MotionEvent.ACTION_DOWN){
+                mGameEngine.cancelTimeStop();
+                GameManager.getInstance().setTimeFreeze(false);
+                GameManager.getInstance().hideConfirmDialogue();
+            }
             return false;
         }
     }
     private class RegularTouchListener implements View.OnTouchListener {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (event.getPointerCount() > 1 && !GameManager.getInstance().getTimeFreezeActivated()) {
-                GameManager.getInstance().setTimeFreeze(true);
-            }
-
             int action = event.getActionMasked();
             switch (action){
                 case MotionEvent.ACTION_DOWN:
@@ -88,6 +94,10 @@ public class InputController{
                         }
                     }
                     break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    GameManager.getInstance().setTimeFreeze(true);
+                    mGameEngine.beginTimeStop();
+                break;
             }
             return true;
         }

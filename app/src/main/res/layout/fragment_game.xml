@@ -11,13 +11,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 
-    <Button
-        android:id="@+id/btn_play_pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
-        android:text="Pause" />
-
     <include
         android:id="@+id/time_stop_dialogue"
         layout="@layout/dialog_time_stop"

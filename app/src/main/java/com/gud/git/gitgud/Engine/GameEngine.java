@@ -158,9 +158,8 @@ public class GameEngine {
 
             if (GameManager.getInstance().isRunning()) {    //draw gameobjects only when the game should be running. game objects wont be on the screen after losing
 
-                for (int i = 0; i < mNumGameObjects; i++) {
+                for (int i = 0; i < mGameObjects.size(); i++) {
                     mGameObjects.get(i).onDraw(mPaint, mCanvas);
-
                 }
             }
 

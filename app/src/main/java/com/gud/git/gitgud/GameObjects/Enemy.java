@@ -30,6 +30,8 @@ public class Enemy extends GameObject {
     private int mOffsetX,mOffsetY;
 
     private float mPositionX,mPositionY,mRadius;
+    private double mPlayerTargetRotation = 0;
+
     private PointF mSimulationEndPoint;
     private PointF mDirection;
     private boolean mIsSimulating = false;
@@ -119,8 +121,12 @@ public class Enemy extends GameObject {
     @Override
     public void onDraw(Paint paint, Canvas canvas){
         //draw the enemy
-        canvas.drawBitmap(mEnemyBitmap, mPositionX - mOffsetX, mPositionY - mOffsetY, paint);
 
+        canvas.save();
+        canvas.translate(mPositionX, mPositionY);
+        canvas.rotate((float)mPlayerTargetRotation - 90);
+        canvas.drawBitmap(mEnemyBitmap, -mOffsetX, -mOffsetY, paint);
+        canvas.restore();
 //        paint.setColor(Color.argb(255, 0, 255,0));
 //        paint.setStyle(Paint.Style.STROKE);
 //        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
@@ -139,10 +145,11 @@ public class Enemy extends GameObject {
 
             moveTo(App.getScreenWidth() / 2, App.getScreenHeight() / 2, elapsedMillis);
 
+            double dX = gameEngine.getPlayer().getmPositionX() - mPositionX;
+            double dY = gameEngine.getPlayer().getmPositionY() - mPositionY;
+            mPlayerTargetRotation = Math.toDegrees(Math.atan2(dY, dX));
 
             if (currentReload <= 0) {
-                float dX = gameEngine.getPlayer().getmPositionX() - mPositionX;
-                float dY = gameEngine.getPlayer().getmPositionY() - mPositionY;
 
                 float magnitude = (float)Math.sqrt((dX *dX)+(dY*dY));
 
@@ -154,8 +161,8 @@ public class Enemy extends GameObject {
                     unitY = 0;
                 }
                 else{
-                    unitX = dX / magnitude;
-                    unitY = dY / magnitude;
+                    unitX = (float)dX / magnitude;
+                    unitY = (float)dY / magnitude;
                 }
 
                 float pdX = gameEngine.getPlayer().getmPositionY() - mPositionY;

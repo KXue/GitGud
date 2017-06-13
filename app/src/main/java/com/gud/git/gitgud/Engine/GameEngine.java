@@ -186,7 +186,7 @@ public class GameEngine {
 
         for (GameObject p : mCollisionSpatialHash.getPotentialColliders(mPlayer)) {
             if (mPlayer.checkCollision(p)) {
-                if (mPlayer.getCurve() != null) {
+                if (mPlayer.isSimulating()) {
                     if (p instanceof Enemy || p instanceof Bullet) {
                         removeGameObject(p);
                     }

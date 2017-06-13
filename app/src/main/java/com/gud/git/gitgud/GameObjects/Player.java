@@ -63,9 +63,11 @@ public class Player extends GameObject implements Renderable,Updateable{
     boolean collided; //debug collision
 
     private PseudoCurve mCurve;
+    private boolean mIsSimulating = false;
 
     public Player(){
         mCurve = null;
+
         //float scaleFactor = 200/1920;
 
         Resources res = App.getContext().getResources();
@@ -140,7 +142,7 @@ public class Player extends GameObject implements Renderable,Updateable{
 //        }
 //        paint.setStyle(Paint.Style.STROKE);
 //        canvas.drawCircle(mPositionX,mPositionY,mRadius,paint);
-        if(mCurve != null){
+        if(mIsSimulating && mCurve != null){
             mCurve.onDraw(paint, canvas);
         }
     }
@@ -157,33 +159,43 @@ public class Player extends GameObject implements Renderable,Updateable{
         }
         if(!mFollowCurve){
             if (gameEngine.mInputController.getTouched()) {
-                if(mCurve != null){
+                if(mIsSimulating){
                     mCurve.onUpdate(elapsedMillis, gameEngine);
                 }else {
                     PointF newPoint = gameEngine.mInputController.getTouchPoint();
                     moveTo(newPoint.x, newPoint.y, elapsedMillis);
                 }
             }
-        }else if(mCurve != null){
+        }else if(mIsSimulating){
             PointF nextLocation = mCurve.travel(mMaxSpeedTimeFreeze * elapsedMillis);
             mPositionX = nextLocation.x;
             mPositionY = nextLocation.y;
             mHitbox.moveCircle(mPositionX,mPositionY);
             if(mCurve.getLength() - mCurve.getTravelledDistance() <  0.01){
                 mFollowCurve = false;
-                mCurve = null;
+                mIsSimulating = false;
             }
         }
     }
     public long getSimulatedTime(){
-        return (long)(mCurve.getLength()/mMaxSpeedTimeFreeze);
+        long retVal = 0;
+        if(mCurve != null){
+            retVal = (long)(mCurve.getLength()/mMaxSpeedTimeFreeze);
+        }
+        return retVal;
     }
     public PseudoCurve getCurve(){
         PseudoCurve retCurve = null;
-        if(mCurve != null){
+        if(mCurve != null && mIsSimulating){
             retCurve = mCurve;
         }
         return retCurve;
+    }
+    public boolean isSimulating(){
+        return mIsSimulating;
+    }
+    public boolean isFollowingCurve(){
+        return mFollowCurve;
     }
 
     void moveTo(float x, float y, long elapsedMillis){
@@ -249,7 +261,7 @@ public class Player extends GameObject implements Renderable,Updateable{
         boolean retVal = false;
 
         if (playerCheckCollision(other.getHitbox())){
-            if (mCurve == null) {
+            if (!mIsSimulating) {
                 playerDie();    //NOT IN TIMEFREEZE AND TOUCHED AN ENEMY, PLAYER DIES
             }
             retVal = true;
@@ -271,12 +283,13 @@ public class Player extends GameObject implements Renderable,Updateable{
 
     @Override
     public void beginSimulation() {
+        mIsSimulating = true;
         mCurve = new PseudoCurve(new PointF(mPositionX, mPositionY));
     }
 
     @Override
     public void cancelSimulation() {
-        mCurve = null;
+        mIsSimulating = false;
     }
 
     @Override

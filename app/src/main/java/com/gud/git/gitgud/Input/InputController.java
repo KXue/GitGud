@@ -95,8 +95,10 @@ public class InputController{
                     }
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
-                    GameManager.getInstance().setTimeFreeze(true);
-                    mGameEngine.beginTimeStop();
+                    if(!mGameEngine.getPlayer().isFollowingCurve()){
+                        GameManager.getInstance().setTimeFreeze(true);
+                        mGameEngine.beginTimeStop();
+                    }
                 break;
             }
             return true;

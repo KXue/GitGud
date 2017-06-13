@@ -83,8 +83,8 @@ public class PseudoCurve implements Updateable, Renderable {
                 totalDistance -= lineDistance;
             }
             else{
-                totalDistance = -1;
                 retPoint = findInterpolatedPoint(mPointList.get(i-1), mPointList.get(i), totalDistance);
+                totalDistance = -1;
                 break;
             }
         }
